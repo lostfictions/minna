@@ -16,7 +16,9 @@
   "author": "s <https://github.com/lostfictions>",
   "license": "AGPL-3.0",
   "dependencies": {
+    "@types/pouchdb": "^6.3.2",
     "pixi.js": "^4.7.3",
+    "pouchdb": "^6.4.3",
     "react": "16.3.1",
     "react-dom": "16.3.1",
     "socket.io-client": "^2.0.4"

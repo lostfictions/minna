@@ -1,5 +1,18 @@
 import * as PIXI from "pixi.js";
 
+import Pouch from "pouchdb";
+
+const HOSTNAME = "localhost";
+const PORT = 3001;
+const DB_NAME = "pix";
+const REMOTE_DB = `http://${HOSTNAME}:${PORT}/db/${DB_NAME}`;
+
+const db = new Pouch(DB_NAME);
+
+db.sync(REMOTE_DB, { live: true, retry: true }).on("error", err => {
+  console.error("PouchDB Sync Error:", err);
+});
+
 // const ren = new PIXI.WebGLRenderer();
 const canvas = document.getElementById("canvas")! as HTMLCanvasElement;
 // ren.view = canvas;
