@@ -1,12 +1,16 @@
 import React from "react";
+import { Provider, inject, observer } from "mobx-react";
 import Mousetrap from "mousetrap";
 
 import StackingContext from "./StackingContext";
-import { Store, withStore, ProvidedStore } from "./Store";
+import { Store } from "../Store";
 
 import { Text } from "automerge";
 
-export default class App extends React.Component<{}, { open: boolean }> {
+export default class App extends React.Component<
+  { store: Store },
+  { open: boolean }
+> {
   constructor(props: any) {
     super(props);
 
@@ -25,7 +29,7 @@ export default class App extends React.Component<{}, { open: boolean }> {
 
   render() {
     return (
-      <Store>
+      <Provider store={this.props.store}>
         <div
           style={{
             transition: "opacity 0.3s ease-in-out",
@@ -34,26 +38,30 @@ export default class App extends React.Component<{}, { open: boolean }> {
         >
           <StackingContext zIndex={0} interactionEnabled={this.state.open}>
             <IdText />
-            <TextFieldWithStore />
+            <TextField />
           </StackingContext>
         </div>
-      </Store>
+      </Provider>
     );
   }
 }
 
-const IdText = withStore(({ store: { id } }) => <div>{id}</div>);
+const IdText = inject("store")(({ store: { clientId } }) => (
+  <div>{clientId}</div>
+));
 
-class TextField extends React.Component<{ store: ProvidedStore }> {
+@inject("store")
+@observer
+class TextField extends React.Component<{ store?: Store }> {
   setField1 = (ev: React.ChangeEvent<any>) => {
-    this.props.store.change(state => {
+    this.props.store!.changeDoc(state => {
       state.field1 = new Text();
       state.field1.insertAt(0, ...ev.target.value);
     });
   };
 
   render() {
-    const { store: { doc } } = this.props;
+    const { doc } = this.props.store!;
     if (!doc || !doc.field1 || !doc.field2) {
       return <div>"nothing"</div>;
     }
@@ -66,5 +74,3 @@ class TextField extends React.Component<{ store: ProvidedStore }> {
     );
   }
 }
-
-const TextFieldWithStore = withStore(TextField);

@@ -1,9 +1,9 @@
 import { Server } from "http";
 
 import express from "express";
-import socket from "socket.io";
+import { default as socket, Socket } from "socket.io";
 
-import { init, change, DocSet, Text, Connection, getChanges } from "automerge";
+import { init, change, DocSet, Text, Connection } from "automerge";
 
 import { State } from "../../defs/shared";
 
@@ -32,13 +32,25 @@ docSet.setDoc(
 //   console.log(Object.keys(doc));
 // });
 
+const clients = new Set<Socket>();
+
 io.on("connection", socket => {
+  clients.add(socket);
+
   console.log(`Client connected!`);
 
   let clientId: string;
   socket.on("id", (id: string) => {
     console.log(`Client identified as '${id}'`);
     clientId = id;
+  });
+
+  socket.on("cursor", ([x, y]: [number, number]) => {
+    clients.forEach(s => {
+      if (s !== socket) {
+        s.emit("othercursor", [clientId, x, y]);
+      }
+    });
   });
 
   const connection = new Connection(docSet, msg => {
@@ -51,14 +63,13 @@ io.on("connection", socket => {
   socket.on("disconnect", reason => {
     console.log(`Client '${clientId}' disconnected! (Reason: '${reason}')`);
     connection.close();
+    clients.delete(socket);
   });
 
   socket.on("automerge", msg => {
     // console.log(`Receiving message: ${JSON.stringify(msg)}`);
     connection.receiveMsg(msg);
   });
-
-  socket.emit("automerge-init", getChanges(init(), docSet.getDoc(DOC_ID)));
 });
 
 server.listen(PORT);

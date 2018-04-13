@@ -17,6 +17,8 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "automerge": "^0.7.1",
+    "mobx": "^4.1.1",
+    "mobx-react": "^5.0.0",
     "mousetrap": "^1.6.1",
     "pixi.js": "^4.7.3",
     "react": "16.3.1",
