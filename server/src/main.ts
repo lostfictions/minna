@@ -3,8 +3,9 @@ import { Server } from "http";
 import express from "express";
 import socket from "socket.io";
 
-import * as automerge from "automerge";
-// import * as Immutable from "immutable";
+import { init, change, DocSet, Text, Connection, getChanges } from "automerge";
+
+import { State } from "../../shared";
 
 const PORT = 3001;
 
@@ -14,14 +15,14 @@ const io = socket(server);
 
 const DOC_ID = "butt";
 
-const docSet = new automerge.DocSet();
+const docSet = new DocSet<State>();
 docSet.setDoc(
   DOC_ID,
-  automerge.change(automerge.init(), (doc: any) => {
-    doc.field1 = new automerge.Text();
+  change(init(), doc => {
+    doc.field1 = new Text();
     doc.field1.insertAt(0, ..."sup");
 
-    doc.field2 = new automerge.Text();
+    doc.field2 = new Text();
     doc.field2.insertAt(0, ..."bro");
   })
 );
@@ -34,7 +35,7 @@ docSet.setDoc(
 io.on("connection", socket => {
   console.log(`Client connected!`);
 
-  const connection = new automerge.Connection(docSet, (msg: any) => {
+  const connection = new Connection(docSet, msg => {
     // console.log(`Sending message: ${JSON.stringify(msg)}`);
     socket.emit("automerge", msg);
   });
@@ -51,10 +52,7 @@ io.on("connection", socket => {
     connection.receiveMsg(msg);
   });
 
-  socket.emit(
-    "automerge-init",
-    automerge.getChanges(automerge.init(), docSet.getDoc(DOC_ID))
-  );
+  socket.emit("automerge-init", getChanges(init(), docSet.getDoc(DOC_ID)));
 });
 
 server.listen(PORT);

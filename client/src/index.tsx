@@ -2,10 +2,12 @@
 // PIXI.utils.skipHello();
 
 import io from "socket.io-client";
-import * as automerge from "automerge";
+import { change, DocSet, Text, Connection } from "automerge";
 
-import * as React from "react";
+import React from "react";
 import { render } from "react-dom";
+
+import { State } from "../../shared";
 
 const PROTOCOL = "http";
 const HOSTNAME = "localhost";
@@ -15,9 +17,9 @@ const socket = io.connect(`${PROTOCOL}://${HOSTNAME}:${PORT}`);
 
 const DOC_ID = "butt";
 
-const docSet = new automerge.DocSet();
+const docSet = new DocSet<State>();
 
-const connection = new automerge.Connection(docSet, (msg: any) => {
+const connection = new Connection(docSet, msg => {
   // console.log(`Sending message: ${JSON.stringify(msg)}`);
   socket.emit("automerge", msg);
 });
@@ -27,7 +29,7 @@ socket.on("automerge", (msg: any) => {
   connection.receiveMsg(msg);
 });
 
-docSet.registerHandler((docId: string, doc: { [field: string]: any }) => {
+docSet.registerHandler((docId, doc) => {
   console.log(`Doc '${docId}' changed!`);
   render(<Butt doc={doc} />, document.querySelector("#root"));
 });
@@ -40,9 +42,9 @@ class Butt extends React.Component<{ doc: any }> {
     const doc = docSet.getDoc(DOC_ID);
     docSet.setDoc(
       DOC_ID,
-      automerge.change(doc, (doc: any) => {
-        doc.field1 = new automerge.Text();
-        doc.field1.insertAt(0, ...ev.target.value);
+      change(doc, state => {
+        state.field1 = new Text();
+        state.field1.insertAt(0, ...ev.target.value);
       })
     );
   };
