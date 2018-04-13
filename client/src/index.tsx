@@ -1,78 +1,13 @@
-// import * as PIXI from "pixi.js";
-// PIXI.utils.skipHello();
-
-import io from "socket.io-client";
-import { change, DocSet, Text, Connection, Doc } from "automerge";
-
 import React from "react";
 import { render } from "react-dom";
 
-import { State } from "../../shared";
+// import * as PIXI from "pixi.js";
+// PIXI.utils.skipHello();
 
-const PROTOCOL = "http";
-const HOSTNAME = "localhost";
-const PORT = 3001;
+import App from "./components/App";
 
-const socket = io.connect(`${PROTOCOL}://${HOSTNAME}:${PORT}`);
-
-const DOC_ID = "butt";
-
-const docSet = new DocSet<State>();
-
-const connection = new Connection(docSet, msg => {
-  // console.log(`Sending message: ${JSON.stringify(msg)}`);
-  socket.emit("automerge", msg);
-});
-
-socket.on("connect", () => {
-  connection.open();
-});
-
-socket.on("disconnect", () => {
-  connection.close();
-});
-
-socket.on("automerge", (msg: any) => {
-  // console.log(`Receiving message: ${JSON.stringify(msg)}`);
-  connection.receiveMsg(msg);
-});
-
-docSet.registerHandler((docId, doc) => {
-  console.log(`Doc '${docId}' changed!`);
-  render(<Butt doc={doc} />, document.querySelector("#root"));
-});
-
-class Butt extends React.Component<{ doc: Doc<State> }> {
-  setField1 = (ev: React.ChangeEvent<any>) => {
-    docSet.setDoc(
-      DOC_ID,
-      change(this.props.doc, state => {
-        state.field1 = new Text();
-        state.field1.insertAt(0, ...ev.target.value);
-      })
-    );
-  };
-
-  // setField2 = (ev: React.ChangeEvent<any>) => {
-  //   //
-  // };
-
-  render() {
-    const doc = this.props.doc;
-    if (!doc || !doc.field1 || !doc.field2) {
-      return <div>"nothing"</div>;
-    }
-
-    return (
-      <div>
-        <input value={doc.field1.join("")} onChange={this.setField1} />
-        {/* <input value={doc.field2.join("")} onChange={this.setField2} /> */}
-      </div>
-    );
-  }
-}
-
-render(<Butt doc={docSet.getDoc(DOC_ID)} />, document.querySelector("#root"));
+const root = document.getElementById("root")!;
+render(<App />, root);
 
 // const canvas = document.getElementById("canvas")! as HTMLCanvasElement;
 // const app = new PIXI.Application({ view: canvas, antialias: true });
