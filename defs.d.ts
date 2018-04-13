@@ -1,4 +1,4 @@
-type primitive = string | number | boolean | undefined | null;
+type primitive = string | number | boolean | undefined | Function | null;
 type DeepReadonly<T> = T extends primitive ? T : DeepReadonlyObject<T>;
 type DeepReadonlyObject<T> = { readonly [P in keyof T]: DeepReadonly<T[P]> };
 
@@ -76,14 +76,14 @@ declare module "automerge" {
 
     /**
      * Adds all the elements of the Text separated by the specified separator string.
-     * @param separator A string used to separate one element of an array from the next in the resulting String. If omitted, the array elements are separated with a comma.
+     * @param separator A string used to separate each character in the resulting String. If omitted, each character is separated with a comma.
      */
     join(separator?: string): string;
 
     /**
-     * Returns a section of an array.
-     * @param start The beginning of the specified portion of the array.
-     * @param end The end of the specified portion of the array.
+     * Returns a section of the text.
+     * @param start The beginning of the specified portion of the text.
+     * @param end The end of the specified portion of the text.
      */
     slice(start?: number, end?: number): string[];
 
@@ -91,7 +91,7 @@ declare module "automerge" {
     deleteAt(index: number): void;
   }
 
-  export class DocSet<T = {}> {
+  export class DocSet<T> {
     constructor();
     docIds: IterableIterator<string>;
 

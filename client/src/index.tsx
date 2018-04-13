@@ -2,7 +2,7 @@
 // PIXI.utils.skipHello();
 
 import io from "socket.io-client";
-import { change, DocSet, Text, Connection } from "automerge";
+import { change, DocSet, Text, Connection, Doc } from "automerge";
 
 import React from "react";
 import { render } from "react-dom";
@@ -24,6 +24,14 @@ const connection = new Connection(docSet, msg => {
   socket.emit("automerge", msg);
 });
 
+socket.on("connect", () => {
+  connection.open();
+});
+
+socket.on("disconnect", () => {
+  connection.close();
+});
+
 socket.on("automerge", (msg: any) => {
   // console.log(`Receiving message: ${JSON.stringify(msg)}`);
   connection.receiveMsg(msg);
@@ -34,15 +42,11 @@ docSet.registerHandler((docId, doc) => {
   render(<Butt doc={doc} />, document.querySelector("#root"));
 });
 
-connection.open();
-
-class Butt extends React.Component<{ doc: any }> {
+class Butt extends React.Component<{ doc: Doc<State> }> {
   setField1 = (ev: React.ChangeEvent<any>) => {
-    //
-    const doc = docSet.getDoc(DOC_ID);
     docSet.setDoc(
       DOC_ID,
-      change(doc, state => {
+      change(this.props.doc, state => {
         state.field1 = new Text();
         state.field1.insertAt(0, ...ev.target.value);
       })
@@ -68,7 +72,7 @@ class Butt extends React.Component<{ doc: any }> {
   }
 }
 
-render(<Butt doc={null} />, document.querySelector("#root"));
+render(<Butt doc={docSet.getDoc(DOC_ID)} />, document.querySelector("#root"));
 
 // const canvas = document.getElementById("canvas")! as HTMLCanvasElement;
 // const app = new PIXI.Application({ view: canvas, antialias: true });
