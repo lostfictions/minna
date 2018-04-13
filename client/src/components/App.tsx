@@ -33,6 +33,7 @@ export default class App extends React.Component<{}, { open: boolean }> {
           }}
         >
           <StackingContext zIndex={0} interactionEnabled={this.state.open}>
+            <IdText />
             <TextFieldWithStore />
           </StackingContext>
         </div>
@@ -41,6 +42,8 @@ export default class App extends React.Component<{}, { open: boolean }> {
   }
 }
 
+const IdText = withStore(({ store: { id } }) => <div>{id}</div>);
+
 class TextField extends React.Component<{ store: ProvidedStore }> {
   setField1 = (ev: React.ChangeEvent<any>) => {
     this.props.store.change(state => {
@@ -48,10 +51,6 @@ class TextField extends React.Component<{ store: ProvidedStore }> {
       state.field1.insertAt(0, ...ev.target.value);
     });
   };
-
-  // setField2 = (ev: React.ChangeEvent<any>) => {
-  //   //
-  // };
 
   render() {
     const { store: { doc } } = this.props;

@@ -3,6 +3,8 @@ import React from "react";
 import io from "socket.io-client";
 import { change, DocSet, Connection, Doc } from "automerge";
 
+import { randomName } from "../util";
+
 import { State } from "../../../defs/shared";
 
 const PROTOCOL = "http";
@@ -12,6 +14,10 @@ const socket = io.connect(`${PROTOCOL}://${HOSTNAME}:${PORT}`);
 
 const DOC_ID = "butt";
 const docSet = new DocSet<State>();
+
+const id = randomName();
+
+socket.emit("id", id);
 
 const connection = new Connection(docSet, msg => {
   // console.log(`Sending message: ${JSON.stringify(msg)}`);
@@ -37,6 +43,7 @@ docSet.registerHandler(docId => {
 
 export interface ProvidedStore {
   doc: Doc<State>;
+  id: string;
   change(callback: (state: State) => void): void;
 }
 
@@ -67,7 +74,7 @@ export class Store extends React.Component<{}, { doc: Doc<State> }> {
 
   render() {
     return (
-      <Provider value={{ doc: this.state.doc, change: this.handleChange }}>
+      <Provider value={{ doc: this.state.doc, id, change: this.handleChange }}>
         {this.props.children}
       </Provider>
     );

@@ -1,6 +1,6 @@
-import { randomInRange } from "./util";
+import { randomInRange } from "./random";
 
-export function getName(): string {
+export function randomName(): string {
   return `${randomInRange(adjs)} ${randomInRange(animals)}`;
 }
 

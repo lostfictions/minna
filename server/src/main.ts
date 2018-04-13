@@ -5,7 +5,7 @@ import socket from "socket.io";
 
 import { init, change, DocSet, Text, Connection, getChanges } from "automerge";
 
-import { State } from "../../shared";
+import { State } from "../../defs/shared";
 
 const PORT = 3001;
 
@@ -35,6 +35,12 @@ docSet.setDoc(
 io.on("connection", socket => {
   console.log(`Client connected!`);
 
+  let clientId: string;
+  socket.on("id", (id: string) => {
+    console.log(`Client identified as '${id}'`);
+    clientId = id;
+  });
+
   const connection = new Connection(docSet, msg => {
     // console.log(`Sending message: ${JSON.stringify(msg)}`);
     socket.emit("automerge", msg);
@@ -43,7 +49,7 @@ io.on("connection", socket => {
   connection.open();
 
   socket.on("disconnect", reason => {
-    console.log(`Client disconnected! (Reason: '${reason}')`);
+    console.log(`Client '${clientId}' disconnected! (Reason: '${reason}')`);
     connection.close();
   });
 
