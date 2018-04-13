@@ -7,7 +7,7 @@ module.exports = {
   devtool: "cheap-module-eval-source-map",
   entry: [
     "webpack-hot-middleware/client?reload=true",
-    path.resolve(__dirname, "./src/index.ts")
+    path.resolve(__dirname, "./src/index.tsx")
   ],
   output: {
     filename: "bundle.js",
@@ -20,13 +20,13 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin()
   ],
   resolve: {
-    extensions: [".ts", ".js"]
+    extensions: [".ts", ".tsx", ".js", ".jsx"]
   },
   module: {
     noParse: /\.min\.js/,
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         loader: "ts-loader",
         options: {
           transpileOnly: true

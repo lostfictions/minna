@@ -15,6 +15,7 @@
   },
   "rules": {
     "no-console": "off",
+    "no-empty": "warn",
     "no-undef": "off",
     "no-unused-expressions": "error",
     "no-unused-vars": "off",
