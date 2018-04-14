@@ -29,5 +29,5 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "outDir": "./dist"
   },
-  "include": ["../defs/**/*", "./src/**/*"]
+  "include": ["../defs/**/*", "./level.d.ts", "./src/**/*"]
 }

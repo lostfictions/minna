@@ -40,7 +40,12 @@ export class Store {
     });
 
     socket.on("connect", () => {
-      // TODO: this is insufficient to resync state
+      // TODO: seems like this is insufficient to resync state on server restart
+      // -- maybe because the server state after a restart doesn't share the
+      // same history root?
+      //
+      // unfortunately, it seems to just silently fail instead of warning about
+      // that or anything.
       console.log("(re)connected");
       connection.open();
     });

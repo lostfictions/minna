@@ -1,7 +1,8 @@
 {
   "search.exclude": {
     "**/node_modules": true,
-    "dist/*": true
+    "server/dist/**/*": true,
+    "server/persist/**/*": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "tslint.enable": false,
@@ -10,5 +11,10 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ]
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true
+  }
 }

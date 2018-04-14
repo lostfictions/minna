@@ -5,4 +5,4 @@ npm-debug.log
 yarn-error.log
 
 server/dist
-server/db
+server/persist
