@@ -1,145 +1,104 @@
 import React from "react";
 import { render } from "react-dom";
-import { configure } from "mobx";
 
-import * as PIXI from "pixi.js";
+import { IJsonPatch } from "mobx-state-tree";
+// import { configure } from "mobx";
+// import {
+//   observable,
+//   action,
+//   autorun,
+//   onBecomeObserved,
+//   onBecomeUnobserved,
+//   IReactionDisposer
+// } from "mobx";
 
-import { Store } from "./Store";
-import { assertNever } from "./util";
-import App from "./components/App";
-
-configure({ enforceActions: true });
-PIXI.utils.skipHello();
-
+import { onSnapshot } from "mobx-state-tree";
 import io from "socket.io-client";
+
 const PROTOCOL = "http";
 const HOSTNAME = "localhost";
-const PORT = 3001;
-const socket = io.connect(`${PROTOCOL}://${HOSTNAME}:${PORT}`);
+const PORT = 3000;
 
-const store = new Store(socket);
-
-const root = document.getElementById("root")!;
-render(<App store={store} />, root);
-
-const canvas = document.getElementById("canvas")! as HTMLCanvasElement;
-const app = new PIXI.Application({ view: canvas, antialias: true });
-const stage = app.stage;
-stage.interactive = true;
-
-stage.on("mousemove", (ev: PIXI.interaction.InteractionEvent) => {
-  const { x, y } = ev.data.global;
-  store.setCursor(x, y);
+const socket = io.connect(`${PROTOCOL}://${HOSTNAME}:${PORT}`, {
+  transports: ["websocket"]
 });
 
-app.renderer.backgroundColor = 0xcccccc;
+////////////////
+// BEGIN WILDCARD PATCH
+////////////////
 
-const gfx = new PIXI.Graphics();
-gfx.width = 0;
-gfx.height = 0;
-gfx.x = 200;
-gfx.y = 200;
+// function wildcard(Emitter: any) {
+//   const emit = Emitter.prototype.emit;
 
-function makeRect(color: number) {
-  gfx.clear();
-  gfx.beginFill(color);
-  gfx.drawRect(-50, -50, 100, 100);
-  gfx.endFill();
-}
+//   function onevent(this: any, packet: any) {
+//     const args = packet.data || [];
+//     if (packet.id != null) {
+//       args.push(this.ack(packet.id));
+//     }
+//     emit.call(this, "*", packet);
+//     return emit.apply(this, args);
+//   }
 
-makeRect(0xff0000);
-stage.addChild(gfx);
+//   return function(socket: any) {
+//     if (socket.onevent !== onevent) {
+//       socket.onevent = onevent;
+//     }
+//     return null;
+//   };
+// }
 
-//////////
-// cursors
-//////////
+// const patch = wildcard(io.Manager);
+// patch(socket);
 
-const colors = [0xff0000, 0x00ff00, 0x0000ff];
-let colorIndex = 0;
-const idToColor = new Map<string, number>();
+// socket.on("*", (...args: any[]) => {
+//   console.log("message, args: " + JSON.stringify(args));
+// });
 
-const cursors = new PIXI.Container();
-stage.addChild(cursors);
+// socket.on("event", (ev: any) => {
+//   console.log("event!", ev);
+// });
 
-function makeCursor(clientId: string): PIXI.Container {
-  let color = idToColor.get(clientId);
-  if (!color) {
-    color = colors[colorIndex];
-    colorIndex = (colorIndex + 1) % colors.length;
-    idToColor.set(clientId, color);
-  }
+////////////////
+// END WILDCARD PATCH
+////////////////
 
-  const cursor = new PIXI.Graphics();
-  cursor.name = clientId;
-  cursor.beginFill(color);
-  cursor.drawCircle(0, 0, 2);
-  cursor.endFill();
-
-  return cursor;
-}
-
-store.otherCursors.forEach(([x, y], clientId) => {
-  console.log("initializing cursor for " + clientId);
-  const cursor = makeCursor(clientId);
-  cursors.addChild(cursor);
-  cursor.x = x;
-  cursor.y = y;
-});
-store.otherCursors.observe(change => {
-  switch (change.type) {
-    case "add": {
-      const cursor = makeCursor(change.name);
-      cursors.addChild(cursor);
-      const [x, y] = change.newValue;
-      cursor.x = x;
-      cursor.y = y;
-      break;
-    }
-    case "update": {
-      const cursor = cursors.getChildByName(change.name);
-      if (!cursor) {
-        console.log(change.name);
-        console.log("not found");
-        console.log("children: ", cursors.children.length);
-        console.log(cursors.children.map(c => c.name).join(", "));
-      }
-      const [x, y] = change.newValue;
-      cursor.x = x;
-      cursor.y = y;
-      break;
-    }
-    case "delete": {
-      const cursor = cursors.getChildByName(change.name);
-      cursor.destroy();
-      break;
-    }
-    default:
-      assertNever(change);
-  }
+socket.on("connect", () => {
+  console.log("socket connected!");
 });
 
-//////////
-// end cursors
-//////////
-
-const rotSpeed = 0.01;
-
-app.ticker.add(dt => {
-  gfx.rotation = gfx.rotation + dt * rotSpeed;
+socket.on("disconnect", (reason: string) => {
+  console.log(`Disconnected! (Reason: '${reason}')`);
 });
 
-function resizeRenderer() {
-  const { innerWidth: w, innerHeight: h } = window;
+// socket.on("patches", (patches: IJsonPatch[]) => {
+//   console.log(`(1) got patches ${patches.join("\n")}, applying`);
+// });
 
-  const canvas = app.view;
-  canvas.width = w;
-  canvas.height = h;
-  canvas.style.width = `${w}px`;
-  canvas.style.height = `${h}px`;
+// import { assertNever } from "./util";
 
-  app.renderer.resize(w, h);
-}
+import { configureMethodForClient, clientListen } from "../shared/method";
 
-resizeRenderer();
+configureMethodForClient(async action => {
+  socket.emit("action", action);
+});
 
-window.addEventListener("resize", resizeRenderer);
+import { model } from "../shared/model";
+
+const m = model.create();
+
+clientListen(m, cb => {
+  console.log("setting up client listener...");
+  socket.on("patches", (patches: IJsonPatch[]) => {
+    console.log(`got patches ${JSON.stringify(patches)}, applying`);
+    cb(patches);
+  });
+});
+
+onSnapshot(m, snap => {
+  console.log(`state is now ${JSON.stringify(snap)}`);
+});
+
+render(
+  <button onClick={() => m.addOne()}>click</button>,
+  document.querySelector("#root")
+);

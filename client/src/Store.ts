@@ -34,38 +34,54 @@ export class Store {
   constructor(socket: SocketIOClient.Socket, clientId = randomName()) {
     this.clientId = clientId;
 
-    const connection = new Connection(this.docSet, msg => {
-      // console.log(`Sending message: ${JSON.stringify(msg)}`);
-      socket.emit("automerge", msg);
-    });
-
     socket.on("connect", () => {
-      // TODO: seems like this is insufficient to resync state on server restart
-      // -- maybe because the server state after a restart doesn't share the
-      // same history root?
-      //
-      // unfortunately, it seems to just silently fail instead of warning about
-      // that or anything.
       console.log("(re)connected");
-      connection.open();
-    });
 
-    socket.on("disconnect", (reason: string) => {
-      console.log(`Disconnected! (Reason: '${reason}')`);
-      connection.close();
+      // On every reconnect, it seems we have to build a new Connection object
+      // -- we can't just open and close the existing one.
+      const connection = new Connection(this.docSet, msg => {
+        console.log(
+          `[${Date.now()
+            .toString()
+            .substr(-5)}] Sending message of length ${
+            JSON.stringify(msg).length
+          }`
+        );
+        socket.emit("automerge", msg);
+      });
+      connection.open();
+
+      const automergeHandler = (msg: any) => {
+        console.log(
+          `[${Date.now()
+            .toString()
+            .substr(-5)}] Receiving message of length ${
+            JSON.stringify(msg).length
+          }`
+        );
+        connection.receiveMsg(msg);
+      };
+      socket.on("automerge", automergeHandler);
+
+      socket.once("disconnect", (reason: string) => {
+        console.log(`Disconnected! (Reason: '${reason}')`);
+        connection.close();
+        socket.off("automerge", automergeHandler);
+      });
     });
 
     socket.on("othercursor", ([clientId, x, y]: [string, number, number]) => {
       this.otherCursors.set(clientId, [x, y]);
     });
 
-    socket.on("automerge", (msg: any) => {
-      // console.log(`Receiving message: ${JSON.stringify(msg)}`);
-      connection.receiveMsg(msg);
-    });
-
-    this.docSet.registerHandler(docId => {
-      console.log(`Doc '${docId}' changed!`);
+    this.docSet.registerHandler((docId, doc) => {
+      console.log(
+        `[${Date.now()
+          .toString()
+          .substr(
+            -5
+          )}] Doc '${docId}' changed!\nfield1 is now: "${doc.field1.join("")}"`
+      );
     });
 
     onBecomeObserved(this, "doc", () =>
