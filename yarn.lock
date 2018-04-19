@@ -405,15 +405,6 @@ atob@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.0.tgz#ab2b150e51d7b122b9efc8d7340c06b6c41076bc"
 
-automerge@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/automerge/-/automerge-0.7.1.tgz#a0419e6d5f1c467f036400f67098be09a85a6d65"
-  dependencies:
-    immutable "^3.8.1"
-    transit-immutable-js "^0.7.0"
-    transit-js "^0.8.846"
-    uuid "^3.1.0"
-
 aws-sign2@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.6.0.tgz#14342dd38dbcc94d0e5b87d763cd63612c0e794f"
@@ -1658,7 +1649,7 @@ eslint-visitor-keys@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
 
-eslint@^4.18.2:
+eslint@^4.19.1:
   version "4.19.1"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.19.1.tgz#32d1d653e1d90408854bfb296f076ec7e186a300"
   dependencies:
@@ -2535,10 +2526,6 @@ ignore-by-default@^1.0.1:
 ignore@^3.3.3:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.7.tgz#612289bfb3c220e186a58118618d5be8c1bab021"
-
-immutable@^3.8.1:
-  version "3.8.2"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
 
 import-lazy@^2.1.0:
   version "2.1.0"
@@ -4387,9 +4374,9 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-prettier@^1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.11.1.tgz#61e43fc4cd44e68f2b0dfc2c38cd4bb0fccdcc75"
+prettier@^1.12.1:
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.12.1.tgz#c1ad20e803e7749faf905a409d2367e06bbe7325"
 
 pretty-format@^22.4.3:
   version "22.4.3"
@@ -5534,14 +5521,6 @@ tr46@^1.0.0:
   dependencies:
     punycode "^2.1.0"
 
-transit-immutable-js@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/transit-immutable-js/-/transit-immutable-js-0.7.0.tgz#993e25089b6311ff402140f556276d6d253005d9"
-
-transit-js@^0.8.846:
-  version "0.8.861"
-  resolved "https://registry.yarnpkg.com/transit-js/-/transit-js-0.8.861.tgz#829e516b80349a41fff5d59f5e6993b5473f72c9"
-
 trim-right@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
@@ -5601,9 +5580,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript-eslint-parser@^14.0.0:
-  version "14.0.0"
-  resolved "https://registry.yarnpkg.com/typescript-eslint-parser/-/typescript-eslint-parser-14.0.0.tgz#c90a8f541c1d96e5c55e2807c61d154e788520f9"
+typescript-eslint-parser@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/typescript-eslint-parser/-/typescript-eslint-parser-15.0.0.tgz#882fd3d7aabffbab0a7f98d2a59fb9a989c2b37f"
   dependencies:
     lodash.unescape "4.0.1"
     semver "5.5.0"

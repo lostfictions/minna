@@ -1,39 +1,35 @@
-// @ts-check
-
-const {
+import {
   applyAction,
   applyPatch,
   recordPatches,
   decorate,
   getPath,
-  flow
-} = require("mobx-state-tree");
+  flow,
+  IJsonPatch,
+  ISerializedActionCall,
+  IStateTreeNode
+} from "mobx-state-tree";
 
-/** @type {(patches : Patch[]) => any} */
-let sendResponse;
-/** @type {(action: Action) => Promise<any>} */
-let sendAction;
+let _sendResponse: (patches: IJsonPatch[]) => any;
+let _sendAction: (action: ISerializedActionCall) => Promise<any>;
 
-/** @typedef {{ name: string, path: string, args: any[]}} Action */
-/** @typedef {{ op: "replace" | "add" | "remove", path: string, value?: any }} Patch */
-
-function configureMethodForServer(
-  /** @type {(patches : Patch[]) => any} */ _sendResponse
+export function configureMethodForServer(
+  sendResponse: (patches: IJsonPatch[]) => any
 ) {
-  sendResponse = _sendResponse;
+  _sendResponse = sendResponse;
 }
 
-function configureMethodForClient(
-  /** @type {(action: Action) => Promise<any>} */ _sendAction
+export function configureMethodForClient(
+  sendAction: (action: ISerializedActionCall) => Promise<any>
 ) {
-  sendAction = _sendAction;
+  _sendAction = sendAction;
 }
 
-function serverListen(
-  /** @type {any} */ tree,
-  /** @type {(cb: (action: Action) => void) => any} */ network
+export function serverListen(
+  tree: IStateTreeNode,
+  networkReceiver: (onAction: (action: ISerializedActionCall) => void) => any
 ) {
-  network(action => {
+  networkReceiver(action => {
     console.log(
       `got action from network: at [${action.path}] => "${
         action.name
@@ -43,11 +39,11 @@ function serverListen(
   });
 }
 
-function clientListen(
-  /** @type {any} */ tree,
-  /** @type {(cb: (result: Patch[]) => void) => any} */ network
+export function clientListen(
+  tree: IStateTreeNode,
+  networkReceiver: (onPatches: (result: IJsonPatch[]) => void) => any
 ) {
-  network(patches => {
+  networkReceiver(patches => {
     console.log(
       `got patches from network: ${JSON.stringify(patches)}. applying.`
     );
@@ -55,7 +51,7 @@ function clientListen(
   });
 }
 
-function method(/** @type {(...args: any[]) => any} */ innerMethod) {
+export function method(innerMethod: (...args: any[]) => any) {
   if (process.env.APP_ENV === "server") {
     console.log("configuring as server...");
     return decorate((call, next) => {
@@ -67,8 +63,7 @@ function method(/** @type {(...args: any[]) => any} */ innerMethod) {
         `in middleware: patches after call: ${JSON.stringify(recorder.patches)}`
       );
 
-      // @ts-ignore
-      return sendResponse(recorder.patches);
+      return _sendResponse(recorder.patches as IJsonPatch[]);
     }, innerMethod);
   } else {
     console.log("configuring as client...");
@@ -77,7 +72,7 @@ function method(/** @type {(...args: any[]) => any} */ innerMethod) {
       return abort(
         flow(function*() {
           console.log(`start of flow. could apply action optimistically here`);
-          yield sendAction({
+          yield _sendAction({
             name: call.name,
             path: getPath(call.context),
             args: call.args
@@ -88,11 +83,3 @@ function method(/** @type {(...args: any[]) => any} */ innerMethod) {
     }, innerMethod);
   }
 }
-
-module.exports = {
-  configureMethodForClient,
-  configureMethodForServer,
-  serverListen,
-  clientListen,
-  method
-};

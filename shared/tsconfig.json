@@ -9,6 +9,7 @@
     // "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
 
     "moduleResolution": "node",
+    "declaration": true,
     // "baseUrl": "./",                       /* Base directory to resolve non-absolute module names. */
     // "paths": {},                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
@@ -25,9 +26,9 @@
     // "inlineSources": true,                 /* Emit the source alongside the sourcemaps within a single file; requires '--inlineSourceMap' or '--sourceMap' to be set. */
 
     /* Experimental Options */
-    "experimentalDecorators": true,
+    // "experimentalDecorators": true,
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "outDir": "./dist"
   },
-  "include": ["./level.d.ts", "./src/**/*"]
+  "include": ["./src/**/*"]
 }
