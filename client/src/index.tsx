@@ -14,7 +14,7 @@ configureMobx({ enforceActions: true });
 
 const PROTOCOL = "http";
 const HOSTNAME = "localhost";
-const PORT = 3000;
+const PORT = 3001;
 
 const socket = io.connect(`${PROTOCOL}://${HOSTNAME}:${PORT}`, {
   transports: ["websocket"]

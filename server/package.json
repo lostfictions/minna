@@ -5,8 +5,9 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
-    "start": "NODE_ENV=production node dist/main.js",
-    "start-dev": "NODE_ENV=development nodemon -i './persist' dist/main.js",
+    "start": "UNIVERS_ENV=server NODE_ENV=production node dist/main.js",
+    "start-dev":
+      "UNIVERS_ENV=server NODE_ENV=butt nodemon -i './persist' dist/main.js",
     "dev": "npm-run-all -l build --parallel watch:ts start-dev",
     "clean": "rm -rf dist/",
     "build": "npm run clean && tsc",
@@ -25,7 +26,8 @@
     "mobx-state-tree": "^2.0.4",
     "socket.io": "^2.0.4",
     "source-map-support": "^0.5.3",
-    "univers": "*"
+    "univers": "*",
+    "zone-shared": "*"
   },
   "devDependencies": {
     "@types/express": "^4.11.1",
@@ -35,7 +37,6 @@
     "@types/socket.io": "^1.4.33",
     "jest": "^22.1.4",
     "nodemon": "^1.14.12",
-    "npm-run-all": "^4.1.2",
     "ts-jest": "^22.0.3",
     "typescript": "^2.8.1"
   },

@@ -52,7 +52,7 @@ export function clientListen(
 }
 
 export function method(innerMethod: (...args: any[]) => any) {
-  if (process.env.APP_ENV === "server") {
+  if (process.env.UNIVERS_ENV === "server") {
     console.log("configuring as server...");
     return decorate((call, next) => {
       const recorder = recordPatches(call.tree);
