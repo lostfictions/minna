@@ -1,14 +1,16 @@
 import React from "react";
 
 interface StackingContextProps {
-  style?: React.CSSProperties;
+  layerStyle?: React.CSSProperties;
+  innerStyle?: React.CSSProperties;
   interactionEnabled?: boolean;
   zIndex: number;
   children: any;
 }
 
 export default function StackingContext({
-  style,
+  layerStyle,
+  innerStyle,
   zIndex,
   children,
   interactionEnabled
@@ -25,10 +27,18 @@ export default function StackingContext({
         height: "100%",
         zIndex,
         pointerEvents: "none",
-        ...style
+        ...layerStyle
       }}
     >
-      <div style={{ pointerEvents: pointerEvents }}>{children}</div>
+      <div
+        style={{
+          display: "inline-block",
+          pointerEvents: pointerEvents,
+          ...innerStyle
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }

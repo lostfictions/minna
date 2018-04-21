@@ -34,9 +34,19 @@ export default class App extends React.Component<
             opacity: this.state.open ? 1 : 0
           }}
         >
-          <StackingContext zIndex={0} interactionEnabled={this.state.open}>
+          <StackingContext
+            innerStyle={{
+              position: "absolute",
+              top: 10,
+              left: 10,
+              padding: 10,
+              backgroundColor: "rgba(0, 0, 255, 0.3)"
+            }}
+            zIndex={0}
+            interactionEnabled={this.state.open}
+          >
             <IdText />
-            <TextField />
+            <DataField />
           </StackingContext>
         </div>
       </Provider>
@@ -44,14 +54,32 @@ export default class App extends React.Component<
   }
 }
 
-const IdText = inject("store")(({ store: { clientId } }) => (
-  <div>{clientId}</div>
-));
+@inject("store")
+@observer
+class IdText extends React.Component<{ store?: Store }> {
+  render() {
+    const { clientId, setClientId } = this.props.store!;
+    return (
+      <input
+        type="text"
+        value={clientId}
+        onChange={ev => setClientId(ev.target.value)}
+      />
+    );
+  }
+}
 
 @inject("store")
 @observer
-class TextField extends React.Component<{ store?: Store }> {
+class DataField extends React.Component<{ store?: Store }> {
   render() {
-    return <div>sup</div>;
+    const { data } = this.props.store!;
+    return (
+      <>
+        <div>x: {data.x}</div>
+        <div>y: {data.y}</div>
+        <button onClick={() => data.addOne()}>Add One</button>
+      </>
+    );
   }
 }

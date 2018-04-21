@@ -1,7 +1,1 @@
-export {
-  configureMethodForClient,
-  configureMethodForServer,
-  serverListen,
-  clientListen,
-  method
-} from "./method";
+export { univers, method, ServerOptions, ClientOptions } from "./method";

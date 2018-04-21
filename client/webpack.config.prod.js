@@ -11,6 +11,11 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"]
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      "process.env.UNIVERS_ENV": JSON.stringify("browser")
+    })
+  ],
   module: {
     noParse: /\.min\.js/,
     rules: [

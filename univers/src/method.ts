@@ -1,83 +1,82 @@
+import debug from "debug";
+
 import {
   applyAction,
   applyPatch,
   recordPatches,
   decorate,
+  getEnv,
   getPath,
   flow,
   IJsonPatch,
+  IModelType,
   ISerializedActionCall,
+  ISnapshottable,
   IStateTreeNode
 } from "mobx-state-tree";
 
-let _sendResponse: (patches: IJsonPatch[]) => any;
-let _sendAction: (action: ISerializedActionCall) => Promise<any>;
+const log = debug("univers");
 
-export function configureMethodForServer(
-  sendResponse: (patches: IJsonPatch[]) => any
-) {
-  _sendResponse = sendResponse;
+debug.enable("univers");
+
+export interface ServerOptions {
+  send: (patches: IJsonPatch[]) => any;
+  recv: (onAction: (action: ISerializedActionCall) => void) => any;
+  env?: { [varName: string]: any };
 }
 
-export function configureMethodForClient(
-  sendAction: (action: ISerializedActionCall) => Promise<any>
-) {
-  _sendAction = sendAction;
+export interface ClientOptions {
+  send: (action: ISerializedActionCall) => Promise<any>;
+  recv: (onPatches: (result: IJsonPatch[]) => void) => any;
+  env?: { [varName: string]: any };
 }
 
-export function serverListen(
-  tree: IStateTreeNode,
-  networkReceiver: (onAction: (action: ISerializedActionCall) => void) => any
-) {
-  networkReceiver(action => {
-    console.log(
-      `got action from network: at [${action.path}] => "${
-        action.name
-      }" applying.`
-    );
-    applyAction(tree, action);
-  });
-}
-
-export function clientListen(
-  tree: IStateTreeNode,
-  networkReceiver: (onPatches: (result: IJsonPatch[]) => void) => any
-) {
-  networkReceiver(patches => {
-    console.log(
-      `got patches from network: ${JSON.stringify(patches)}. applying.`
-    );
-    applyPatch(tree, patches);
-  });
+export function univers<S, T>(
+  modelType: IModelType<S, T>,
+  options: ServerOptions | ClientOptions
+): IStateTreeNode & ISnapshottable<S> & T {
+  let tree: IStateTreeNode & ISnapshottable<S> & T;
+  if (process.env.UNIVERS_ENV === "server") {
+    const { recv, send, env } = options as ServerOptions;
+    tree = modelType.create({} as S, { __universSendServer: send, ...env });
+    recv(action => applyAction(tree, action));
+  } else {
+    const { recv, send, env } = options as ClientOptions;
+    tree = modelType.create({} as S, { __universSendClient: send, ...env });
+    recv(patches => applyPatch(tree, patches));
+  }
+  return tree;
 }
 
 export function method(innerMethod: (...args: any[]) => any) {
   if (process.env.UNIVERS_ENV === "server") {
-    console.log("configuring as server...");
+    log("configuring as server...");
     return decorate((call, next) => {
-      const recorder = recordPatches(call.tree);
-      console.log("in middleware: before call");
-      const result = next(call);
-      console.log(`in middleware: after call, result is "${result}"`);
-      console.log(
-        `in middleware: patches after call: ${JSON.stringify(recorder.patches)}`
-      );
+      const { __universSendServer: send } = getEnv(call.tree);
+      if (!send) {
+        throw new Error(`Send function not found in tree environment!`);
+      }
 
-      return _sendResponse(recorder.patches as IJsonPatch[]);
+      const recorder = recordPatches(call.tree);
+      next(call);
+      return send(recorder.patches as IJsonPatch[]);
     }, innerMethod);
   } else {
-    console.log("configuring as client...");
+    log("configuring as client...");
     return decorate((call, _next, abort) => {
-      console.log("in middleware: sending...");
+      const { __universSendClient: send } = getEnv(call.tree);
+      if (!send) {
+        throw new Error(`Send function not found in tree environment!`);
+      }
+
       return abort(
         flow(function*() {
-          console.log(`start of flow. could apply action optimistically here`);
-          yield _sendAction({
+          // TODO: could apply action optimistically here
+          yield send({
             name: call.name,
             path: getPath(call.context),
             args: call.args
           });
-          console.log(`after sending action in flow.`);
         })()
       );
     }, innerMethod);

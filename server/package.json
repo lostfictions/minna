@@ -7,7 +7,7 @@
   "scripts": {
     "start": "UNIVERS_ENV=server NODE_ENV=production node dist/main.js",
     "start-dev":
-      "UNIVERS_ENV=server NODE_ENV=butt nodemon -i './persist' dist/main.js",
+      "DEBUG=univers DEBUG_COLORS=true UNIVERS_ENV=server NODE_ENV=development nodemon -i './persist' dist/main.js",
     "dev": "npm-run-all -l build --parallel watch:ts start-dev",
     "clean": "rm -rf dist/",
     "build": "npm run clean && tsc",

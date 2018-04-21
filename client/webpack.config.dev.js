@@ -17,7 +17,10 @@ module.exports = {
     new ForkTsCheckerWebpackPlugin({
       tsconfig: path.resolve(__dirname, "./tsconfig.json")
     }),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      "process.env.UNIVERS_ENV": JSON.stringify("browser")
+    })
   ],
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"]
