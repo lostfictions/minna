@@ -9,7 +9,7 @@ import * as PIXI from "pixi.js";
 
 import App from "./components/App";
 import { Store } from "./Store";
-import { assertNever } from "./util";
+import { assertNever } from "zone-shared";
 
 configureMobx({ enforceActions: true });
 PIXI.utils.skipHello();

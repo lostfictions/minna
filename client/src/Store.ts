@@ -3,9 +3,7 @@ import { IJsonPatch, applySnapshot } from "mobx-state-tree";
 
 import { univers, ClientOptions } from "univers";
 
-import { model } from "zone-shared";
-
-import { randomName } from "./util";
+import { model, randomName } from "zone-shared";
 
 export class Store {
   @observable clientId: string;
