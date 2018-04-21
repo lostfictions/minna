@@ -14,8 +14,7 @@
     "test:ts": "tsc --noEmit",
     "test:eslint": "eslint .",
     "watch:ts": "tsc -w",
-    "watch:test": "jest --colors --watch",
-    "prepublish": "npm run build"
+    "watch:test": "jest --colors --watch"
   },
   "author": "s <https://github.com/lostfictions>",
   "license": "AGPL-3.0",

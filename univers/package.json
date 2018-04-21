@@ -13,12 +13,12 @@
     "test:ts": "tsc --noEmit",
     "test:eslint": "eslint .",
     "watch:ts": "tsc -w",
-    "watch:test": "jest --colors --watch",
-    "prepublish": "npm run build"
+    "watch:test": "jest --colors --watch"
   },
   "author": "s <https://github.com/lostfictions>",
   "license": "AGPL-3.0",
   "dependencies": {
+    "debug": "^3.1.0",
     "mobx-state-tree": "^2.0.4"
   },
   "devDependencies": {
