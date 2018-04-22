@@ -1,16 +1,16 @@
 import { observable, action, autorun, IReactionDisposer } from "mobx";
 import { IJsonPatch, applySnapshot } from "mobx-state-tree";
 
-import { univers, ClientOptions } from "univers";
+import { universClient } from "univers";
 
-import { model, randomName } from "zone-shared";
+import { Model, randomName } from "zone-shared";
 
 export class Store {
   @observable clientId: string;
 
   @observable.ref cursorPos: [number, number] = [0, 0];
 
-  data: typeof model.Type;
+  data: typeof Model.Type;
 
   readonly otherCursors = observable.map<
     string,
@@ -23,19 +23,20 @@ export class Store {
   constructor(socket: SocketIOClient.Socket, clientId = randomName()) {
     this.clientId = clientId;
 
-    this.data = univers(model, {
+    const { tree, recv } = universClient({
+      model: Model,
       send: async modelAction => {
-        console.log("emitting action");
+        console.log("emitting action ", JSON.stringify(modelAction));
         socket.emit("action", modelAction);
-      },
-      recv: onPatches => {
-        console.log("setting up client listener...");
-        socket.on("patches", (patches: IJsonPatch[]) => {
-          console.log(`got patches ${JSON.stringify(patches)}, applying`);
-          onPatches(patches);
-        });
       }
-    } as ClientOptions);
+    });
+
+    this.data = tree;
+
+    socket.on("patch", (patch: IJsonPatch) => {
+      console.log(`got patch ${JSON.stringify(patch)}, applying`);
+      recv(patch);
+    });
 
     socket.on("init", (snap: any) => applySnapshot(this.data, snap));
 

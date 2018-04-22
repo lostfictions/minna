@@ -20,10 +20,12 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "mobx-state-tree": "^2.0.4",
-    "univers": "*"
+    "univers": "*",
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "@types/jest": "^22.1.1",
+    "@types/uuid": "^3.4.3",
     "jest": "^22.1.4",
     "ts-jest": "^22.0.3",
     "typescript": "^2.8.1"
@@ -33,6 +35,12 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
   }
 }

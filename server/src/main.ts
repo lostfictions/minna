@@ -4,8 +4,8 @@ import express from "express";
 import { default as socket } from "socket.io";
 
 import { getSnapshot } from "mobx-state-tree";
-import { univers, ServerOptions } from "univers";
-import { model } from "zone-shared";
+import { universServer } from "univers";
+import { Model } from "zone-shared";
 
 // import path from "path";
 // import level from "level";
@@ -19,20 +19,17 @@ const app = express();
 const server = new Server(app);
 const io = socket(server);
 
-let onAction!: (action: any) => void;
-const m = univers(model, {
-  send: async patches => {
-    console.log(`sending patch: ${JSON.stringify(patches)}`);
+const { tree: m, recv } = universServer({
+  model: Model,
+  send: async patch => {
+    console.log(`sending patch: ${JSON.stringify(patch)}`);
 
     // simulate network latency
     // await new Promise(res => setTimeout(() => res(), 2000));
 
-    io.emit("patches", patches);
-  },
-  recv: cb => {
-    onAction = cb;
+    io.emit("patch", patch);
   }
-} as ServerOptions);
+});
 
 import { onSnapshot as onSnap_DEBUG } from "mobx-state-tree";
 onSnap_DEBUG(m, snap => {
@@ -48,7 +45,7 @@ io.on("connection", s => {
 
   s.on("action", (action: any) => {
     console.log(`got action: ${JSON.stringify(action)}. applying`);
-    onAction(action);
+    recv(action);
   });
 
   s.on("id", id => {

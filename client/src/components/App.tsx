@@ -2,6 +2,9 @@ import React from "react";
 import { Provider, inject, observer } from "mobx-react";
 import Mousetrap from "mousetrap";
 
+import { hsvToRgb } from "zone-shared";
+import { utils as Util } from "pixi.js";
+
 import StackingContext from "./StackingContext";
 import { Store } from "../Store";
 
@@ -76,9 +79,20 @@ class DataField extends React.Component<{ store?: Store }> {
     const { data } = this.props.store!;
     return (
       <>
-        <div>x: {data.x}</div>
-        <div>y: {data.y}</div>
-        <button onClick={() => data.addOne()}>Add One</button>
+        <div>{JSON.stringify(data.sprites.values)}</div>
+        <button
+          onClick={() => {
+            data.addSprite({
+              x: 100 + Math.random() * 500,
+              y: 100 + Math.random() * 500,
+              width: 200,
+              height: 200,
+              color: Util.rgb2hex(hsvToRgb(Math.random(), 0.5, 0.9))
+            });
+          }}
+        >
+          Add sprite
+        </button>
       </>
     );
   }

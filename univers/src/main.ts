@@ -1,1 +1,1 @@
-export { univers, method, ServerOptions, ClientOptions } from "./method";
+export { univers, universClient, universServer } from "./univers";

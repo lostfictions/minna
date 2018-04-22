@@ -36,6 +36,7 @@
     "@types/webpack-env": "^1.13.5",
     "fork-ts-checker-webpack-plugin": "^0.4.0",
     "jest": "^22.1.4",
+    "source-map-loader": "^0.2.3",
     "ts-jest": "^22.0.3",
     "ts-loader": "^4.0.1",
     "typescript": "^2.8.1",
@@ -48,6 +49,12 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
   }
 }

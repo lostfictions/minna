@@ -1,2 +1,2 @@
-export { model } from "./model";
+export { Model, Sprite } from "./model";
 export * from "./util";

@@ -29,6 +29,11 @@ module.exports = {
     noParse: /\.min\.js/,
     rules: [
       {
+        test: /\.(j|t)sx?$/,
+        use: "source-map-loader",
+        enforce: "pre"
+      },
+      {
         test: /\.tsx?$/,
         loader: "ts-loader",
         options: {
