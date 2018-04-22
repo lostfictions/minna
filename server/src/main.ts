@@ -14,7 +14,7 @@ import { Model } from "zone-shared";
 // const DB_PATH = path.join(__dirname, "../persist/db");
 // const db = level(DB_PATH);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const app = express();
 app.use(express.static(path.resolve(__dirname, "../static")));
@@ -25,7 +25,7 @@ const io = socket(server);
 const { tree: m, recv } = serverSync({
   model: Model,
   send: async patch => {
-    console.log(`sending patch: ${JSON.stringify(patch)}`);
+    // console.log(`sending patch: ${JSON.stringify(patch)}`);
 
     // simulate network latency
     // await new Promise(res => setTimeout(() => res(), 2000));
@@ -51,8 +51,12 @@ io.on("connection", s => {
   s.emit("init", getSnapshot(m));
 
   s.on("action", (action: any) => {
-    console.log(`got action: ${JSON.stringify(action)}. applying`);
-    recv(action);
+    // console.log(`got action: ${JSON.stringify(action)}. applying`);
+    try {
+      recv(action);
+    } catch (e) {
+      console.error(`Couldn't apply action ${JSON.stringify(action)}:\n`, e);
+    }
   });
 
   s.on("id", id => {

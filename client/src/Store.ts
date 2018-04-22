@@ -26,7 +26,7 @@ export class Store {
     const { tree, recv } = clientSync({
       model: Model,
       send: async modelAction => {
-        console.log("emitting action ", JSON.stringify(modelAction));
+        // console.log("emitting action ", JSON.stringify(modelAction));
         socket.emit("action", modelAction);
       }
     });
@@ -34,7 +34,7 @@ export class Store {
     this.data = tree;
 
     socket.on("patch", (patch: IJsonPatch) => {
-      console.log(`got patch ${JSON.stringify(patch)}, applying`);
+      // console.log(`got patch ${JSON.stringify(patch)}, applying`);
       recv(patch);
     });
 

@@ -21,7 +21,6 @@ module.exports = {
     })
   ],
   module: {
-    noParse: /\.min\.js/,
     rules: [
       {
         test: /\.(j|t)sx?$/,

@@ -63,7 +63,7 @@ class IdText extends React.Component<{ store?: Store }> {
   render() {
     const { clientId, setClientId } = this.props.store!;
     return (
-      <label>
+      <label style={{ display: "block" }}>
         Name
         <input
           type="text"
@@ -97,7 +97,7 @@ class DataField extends React.Component<{ store?: Store }> {
         >
           Add sprite
         </button>
-        <div>
+        <div style={{ maxHeight: 200, overflowY: "scroll" }}>
           {[...data.sprites.values()].map((v, i) => (
             <div key={i}>
               <button

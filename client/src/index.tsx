@@ -15,11 +15,17 @@ import Sprites from "./pixi/Sprites";
 configureMobx({ enforceActions: true });
 PIXI.utils.skipHello();
 
-const PROTOCOL = "http";
-const HOSTNAME = "localhost";
-const PORT = 3001;
+let host: string;
+if (process.env.NODE_ENV === "production") {
+  host = window.location.toString();
+} else {
+  const PROTOCOL = "http";
+  const HOSTNAME = "localhost";
+  const PORT = 3001;
+  host = `${PROTOCOL}://${HOSTNAME}:${PORT}`;
+}
 
-const socket = io.connect(`${PROTOCOL}://${HOSTNAME}:${PORT}`, {
+const socket = io.connect(host, {
   transports: ["websocket"]
 });
 

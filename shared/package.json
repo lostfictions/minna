@@ -1,10 +1,12 @@
 {
   "name": "zone-shared",
   "version": "0.0.1",
-  "description": "shared code between client and server",
-  "private": true,
+  "description": "shared code 4 zone",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "dev": "run-s -l build watch:ts",
     "clean": "rm -rf dist/",
@@ -19,6 +21,7 @@
   "author": "s <https://github.com/lostfictions>",
   "license": "AGPL-3.0",
   "dependencies": {
+    "mobx": "^4.1.1",
     "mobx-state-tree": "^2.0.4",
     "uuid": "^3.2.1"
   },
