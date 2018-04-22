@@ -18,9 +18,6 @@ import {
 
 const log = debug("minna");
 
-// FIXME: remove
-debug.enable("minna");
-
 export interface CommonOptions<S> {
   initialSnapshot?: S;
   env?: { [varName: string]: any };

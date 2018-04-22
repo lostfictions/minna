@@ -1,3 +1,5 @@
+/* eslint no-undef:2, no-unused-vars:2 */
+
 const path = require("path");
 const webpack = require("webpack");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");

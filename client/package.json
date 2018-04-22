@@ -6,7 +6,7 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "node webpack-dev-server.js",
-    "build": "webpack",
+    "build": "webpack -p --config webpack.config.prod.js",
     "test": "run-s -l test:*",
     "test:jest": "jest --colors",
     "test:ts": "tsc --noEmit",
@@ -16,6 +16,7 @@
   "author": "s <https://github.com/lostfictions>",
   "license": "AGPL-3.0",
   "dependencies": {
+    "minna": "*",
     "mobx": "^4.1.1",
     "mobx-react": "^5.0.0",
     "mobx-state-tree": "^2.0.4",
@@ -24,7 +25,6 @@
     "react": "16.3.1",
     "react-dom": "16.3.1",
     "socket.io-client": "^2.0.4",
-    "minna": "*",
     "zone-shared": "*"
   },
   "devDependencies": {
@@ -41,6 +41,7 @@
     "ts-loader": "^4.0.1",
     "typescript": "^2.8.1",
     "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.15",
     "webpack-dev-middleware": "^3.0.1",
     "webpack-hot-middleware": "^2.21.2"
   },

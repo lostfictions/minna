@@ -1,5 +1,5 @@
 import { autorun } from "mobx";
-import { Graphics } from "pixi.js";
+import { Graphics, interaction } from "pixi.js";
 
 import { Sprite } from "zone-shared";
 
@@ -9,12 +9,34 @@ export default class PixiSprite {
   readonly disposers: (() => void)[];
 
   constructor(sprite: typeof Sprite.Type) {
-    this.graphic = new Graphics();
+    const g = new Graphics();
+    this.graphic = g;
 
-    this.graphic.interactive = true;
-    this.graphic.on("click", () => {
-      sprite.setPosition(Math.random() * 400, Math.random() * 400);
-    });
+    g.alpha = 0.5;
+
+    g.interactive = true;
+
+    let data: interaction.InteractionData | null = null;
+    let offset: { x: number; y: number };
+    const dragStart = (ev: interaction.InteractionEvent) => {
+      data = ev.data;
+      offset = data.getLocalPosition(g);
+    };
+
+    const dragEnd = () => {
+      data = null;
+    };
+
+    const dragMove = () => {
+      if (!data) return;
+      const { x, y } = data.getLocalPosition(g.parent);
+      sprite.setPosition(x - offset.x, y - offset.y);
+    };
+
+    g.on("pointerdown", dragStart);
+    g.on("pointerup", dragEnd);
+    g.on("pointerupoutside", dragEnd);
+    g.on("pointermove", dragMove);
 
     this.disposers = [
       autorun(() => {
@@ -26,6 +48,9 @@ export default class PixiSprite {
       }),
       autorun(() => {
         this.graphic.y = sprite.y;
+      }),
+      autorun(() => {
+        this.graphic.rotation = sprite.rotation;
       }),
       autorun(() => {
         this.setColor(sprite.color);
@@ -44,6 +69,7 @@ export default class PixiSprite {
     this.disposers.forEach(d => d());
     (this.disposers as any) = null;
 
+    this.graphic.removeAllListeners();
     this.graphic.destroy();
     (this.graphic as any) = null;
   }

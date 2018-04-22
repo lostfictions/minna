@@ -1,3 +1,4 @@
+import path from "path";
 import { Server } from "http";
 
 import express from "express";
@@ -16,6 +17,8 @@ import { Model } from "zone-shared";
 const PORT = 3001;
 
 const app = express();
+app.use(express.static(path.resolve(__dirname, "../static")));
+
 const server = new Server(app);
 const io = socket(server);
 

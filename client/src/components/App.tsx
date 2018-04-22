@@ -16,7 +16,7 @@ export default class App extends React.Component<
     super(props);
 
     this.state = {
-      open: true
+      open: false
     };
 
     Mousetrap.bind("`", () => {
@@ -99,9 +99,19 @@ class DataField extends React.Component<{ store?: Store }> {
         </button>
         <div>
           {[...data.sprites.values()].map((v, i) => (
-            <pre key={i}>{`[${v.x.toFixed(2)},${v.y.toFixed(
-              2
-            )}]: #${(v.color as number).toString(16).toUpperCase()}`}</pre>
+            <div key={i}>
+              <button
+                style={{ display: "inline" }}
+                onClick={() => data.deleteSprite(v.id)}
+              >
+                X
+              </button>
+              <pre style={{ display: "inline" }}>{`[${v.x.toFixed(
+                2
+              )},${v.y.toFixed(2)}]: #${(v.color as number)
+                .toString(16)
+                .toUpperCase()}`}</pre>
+            </div>
           ))}
         </div>
       </>
