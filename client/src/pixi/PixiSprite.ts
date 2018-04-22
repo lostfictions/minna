@@ -3,23 +3,24 @@ import { Graphics } from "pixi.js";
 
 import { Sprite } from "zone-shared";
 
-import App from "./PixiApp";
-
 export default class PixiSprite {
-  readonly app: App;
-  readonly sprite: typeof Sprite.Type;
-
   readonly graphic: Graphics;
 
   readonly disposers: (() => void)[];
 
-  constructor(app: App, sprite: typeof Sprite.Type) {
-    this.app = app;
-    this.sprite = sprite;
+  constructor(sprite: typeof Sprite.Type) {
     this.graphic = new Graphics();
-    this.app.stage.addChild(this.graphic);
+
+    this.graphic.interactive = true;
+    this.graphic.on("click", () => {
+      sprite.setPosition(Math.random() * 400, Math.random() * 400);
+    });
 
     this.disposers = [
+      autorun(() => {
+        console.log("id", sprite.id);
+        this.graphic.name = sprite.id as string;
+      }),
       autorun(() => {
         this.graphic.x = sprite.x;
       }),
@@ -40,6 +41,9 @@ export default class PixiSprite {
   }
 
   destroy() {
+    this.disposers.forEach(d => d());
+    (this.disposers as any) = null;
+
     this.graphic.destroy();
     (this.graphic as any) = null;
   }

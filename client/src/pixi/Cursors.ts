@@ -24,6 +24,7 @@ export default class Cursors {
   constructor(app: App) {
     this.app = app;
     this.container = new Container();
+    this.container.name = "Cursors";
     app.stage.addChild(this.container);
 
     app.store.otherCursors.forEach(({ x, y, time }, clientId) => {

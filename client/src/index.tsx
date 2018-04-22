@@ -10,6 +10,7 @@ import { Store } from "./Store";
 
 import PixiApp from "./pixi/PixiApp";
 import Cursors from "./pixi/Cursors";
+import Sprites from "./pixi/Sprites";
 
 configureMobx({ enforceActions: true });
 PIXI.utils.skipHello();
@@ -34,36 +35,14 @@ const store = new Store(socket);
 
 render(<App store={store} />, document.querySelector("#root"));
 
-//////////////////////////////
-// PIXI
-//////////////////////////////
+///////////
+// Pixi
+///////////
 
 const app = new PixiApp(store, {
   view: document.getElementById("canvas")! as HTMLCanvasElement,
   antialias: true,
   backgroundColor: 0xcccccc
 });
-
 /* const cursors =  */ new Cursors(app);
-
-// const gfx = new PIXI.Graphics();
-// gfx.width = 0;
-// gfx.height = 0;
-// gfx.x = 200;
-// gfx.y = 200;
-
-// function makeRect(color: number) {
-//   gfx.clear();
-//   gfx.beginFill(color);
-//   gfx.drawRect(-50, -50, 100, 100);
-//   gfx.endFill();
-// }
-
-// makeRect(0xff0000);
-// stage.addChild(gfx);
-
-// const rotSpeed = 0.01;
-
-// app.ticker.add(dt => {
-//   gfx.rotation = gfx.rotation + dt * rotSpeed;
-// });
+/* const sprites = */ new Sprites(app);

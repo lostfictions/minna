@@ -31,10 +31,14 @@ const { tree: m, recv } = universServer({
   }
 });
 
-import { onSnapshot as onSnap_DEBUG } from "mobx-state-tree";
-onSnap_DEBUG(m, snap => {
-  console.log(`state is now ${JSON.stringify(snap)}`);
-});
+/////////////////
+// DEBUG
+/////////////////
+// import { onSnapshot as onSnap_DEBUG } from "mobx-state-tree";
+// onSnap_DEBUG(m, snap => {
+//   console.log(`\nstate is now'\n${JSON.stringify(snap, undefined, 2)}\n\n`);
+// });
+/////////////////
 
 const idsBySocket = new Map<socket.Socket, string>();
 

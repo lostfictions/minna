@@ -44,7 +44,7 @@ export default class PixiApp {
     window.addEventListener("resize", this.resizeRenderer);
   }
 
-  resizeRenderer() {
+  resizeRenderer = () => {
     const { innerWidth: w, innerHeight: h } = window;
 
     const canvas = this.view;
@@ -54,7 +54,7 @@ export default class PixiApp {
     canvas.style.height = `${h}px`;
 
     this.renderer.resize(w, h);
-  }
+  };
 
   start(): void {
     this.pixiApp.start();

@@ -63,11 +63,14 @@ class IdText extends React.Component<{ store?: Store }> {
   render() {
     const { clientId, setClientId } = this.props.store!;
     return (
-      <input
-        type="text"
-        value={clientId}
-        onChange={ev => setClientId(ev.target.value)}
-      />
+      <label>
+        Name
+        <input
+          type="text"
+          value={clientId}
+          onChange={ev => setClientId(ev.target.value)}
+        />
+      </label>
     );
   }
 }
@@ -79,7 +82,6 @@ class DataField extends React.Component<{ store?: Store }> {
     const { data } = this.props.store!;
     return (
       <>
-        <div>{JSON.stringify(data.sprites.values)}</div>
         <button
           onClick={() => {
             data.addSprite({
@@ -87,12 +89,21 @@ class DataField extends React.Component<{ store?: Store }> {
               y: 100 + Math.random() * 500,
               width: 200,
               height: 200,
-              color: Util.rgb2hex(hsvToRgb(Math.random(), 0.5, 0.9))
+              color: Util.rgb2hex(
+                hsvToRgb(Math.random(), 0.5, 0.9).map(v => v / 256)
+              )
             });
           }}
         >
           Add sprite
         </button>
+        <div>
+          {[...data.sprites.values()].map((v, i) => (
+            <pre key={i}>{`[${v.x.toFixed(2)},${v.y.toFixed(
+              2
+            )}]: #${(v.color as number).toString(16).toUpperCase()}`}</pre>
+          ))}
+        </div>
       </>
     );
   }
