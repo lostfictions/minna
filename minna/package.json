@@ -4,6 +4,9 @@
   "description": "keep mst server and client state in sync",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "dev": "run-s -l build watch:ts",
     "clean": "rm -rf dist/",
@@ -16,7 +19,7 @@
     "watch:test": "jest --colors --watch"
   },
   "author": "s <https://github.com/lostfictions>",
-  "license": "AGPL-3.0",
+  "license": "MPL-2.0",
   "dependencies": {
     "debug": "^3.1.0",
     "mobx-state-tree": "^2.0.4"
