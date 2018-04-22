@@ -5,9 +5,8 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
-    "start": "UNIVERS_ENV=server NODE_ENV=production node dist/main.js",
-    "start-dev":
-      "DEBUG=univers DEBUG_COLORS=true UNIVERS_ENV=server NODE_ENV=development nodemon -i './persist' dist/main.js",
+    "start": "NODE_ENV=production node dist/main.js",
+    "start-dev": "NODE_ENV=development nodemon -i './persist' dist/main.js",
     "dev": "npm-run-all -l build --parallel watch:ts start-dev",
     "clean": "rm -rf dist/",
     "build": "npm run clean && tsc",
@@ -26,7 +25,7 @@
     "mobx-state-tree": "^2.0.4",
     "socket.io": "^2.0.4",
     "source-map-support": "^0.5.3",
-    "univers": "*",
+    "minna": "*",
     "zone-shared": "*"
   },
   "devDependencies": {

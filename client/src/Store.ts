@@ -1,7 +1,7 @@
 import { observable, action, autorun, IReactionDisposer } from "mobx";
 import { IJsonPatch, applySnapshot } from "mobx-state-tree";
 
-import { universClient } from "univers";
+import { clientSync } from "minna";
 
 import { Model, randomName } from "zone-shared";
 
@@ -23,7 +23,7 @@ export class Store {
   constructor(socket: SocketIOClient.Socket, clientId = randomName()) {
     this.clientId = clientId;
 
-    const { tree, recv } = universClient({
+    const { tree, recv } = clientSync({
       model: Model,
       send: async modelAction => {
         console.log("emitting action ", JSON.stringify(modelAction));

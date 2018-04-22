@@ -1,5 +1,5 @@
 {
-  "name": "univers",
+  "name": "minna",
   "version": "0.0.1",
   "description": "keep mst server and client state in sync",
   "main": "dist/main.js",

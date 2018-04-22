@@ -16,10 +16,10 @@ import {
   onPatch
 } from "mobx-state-tree";
 
-const log = debug("univers");
+const log = debug("minna");
 
 // FIXME: remove
-debug.enable("univers");
+debug.enable("minna");
 
 export interface CommonOptions<S> {
   initialSnapshot?: S;
@@ -39,31 +39,31 @@ export interface ClientOptions<S, T> extends CommonOptions<S> {
 export type ServerRecv = { recv: (action: ISerializedActionCall) => void };
 export type ClientRecv = { recv: (result: IJsonPatch) => void };
 
-export function univers<S, T>(
+export function sync<S, T>(
   options: ServerOptions<S, T>
 ): {
   tree: IStateTreeNode & ISnapshottable<S> & T;
 } & ServerRecv;
-export function univers<S, T>(
+export function sync<S, T>(
   options: ClientOptions<S, T>
 ): {
   tree: IStateTreeNode & ISnapshottable<S> & T;
 } & ClientRecv;
-export function univers<S, T>(
+export function sync<S, T>(
   options: ServerOptions<S, T> | ClientOptions<S, T>
 ): {
   tree: IStateTreeNode & ISnapshottable<S> & T;
 } & (ServerRecv | ClientRecv) {
-  if (process.env.UNIVERS_ENV === "server") {
+  if (process.env.MINNA_ENV === "server") {
     log("configuring as server.");
-    return universServer(options as ServerOptions<S, T>);
+    return serverSync(options as ServerOptions<S, T>);
   } else {
     log("configuring as client.");
-    return universClient(options as ClientOptions<S, T>);
+    return clientSync(options as ClientOptions<S, T>);
   }
 }
 
-export function universServer<S, T>(
+export function serverSync<S, T>(
   options: ServerOptions<S, T>
 ): {
   tree: IStateTreeNode & ISnapshottable<S> & T;
@@ -79,7 +79,7 @@ export function universServer<S, T>(
   };
 }
 
-export function universClient<S, T>(
+export function clientSync<S, T>(
   options: ClientOptions<S, T>
 ): {
   tree: IStateTreeNode & ISnapshottable<S> & T;

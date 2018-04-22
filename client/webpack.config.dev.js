@@ -19,7 +19,7 @@ module.exports = {
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
-      "process.env.UNIVERS_ENV": JSON.stringify("browser")
+      "process.env.MINNA_ENV": JSON.stringify("browser")
     })
   ],
   resolve: {

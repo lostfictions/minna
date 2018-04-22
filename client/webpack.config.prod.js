@@ -13,7 +13,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      "process.env.UNIVERS_ENV": JSON.stringify("browser")
+      "process.env.MINNA_ENV": JSON.stringify("browser")
     })
   ],
   module: {

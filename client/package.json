@@ -24,7 +24,7 @@
     "react": "16.3.1",
     "react-dom": "16.3.1",
     "socket.io-client": "^2.0.4",
-    "univers": "*",
+    "minna": "*",
     "zone-shared": "*"
   },
   "devDependencies": {

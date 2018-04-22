@@ -4,7 +4,7 @@ import express from "express";
 import { default as socket } from "socket.io";
 
 import { getSnapshot } from "mobx-state-tree";
-import { universServer } from "univers";
+import { serverSync } from "minna";
 import { Model } from "zone-shared";
 
 // import path from "path";
@@ -19,7 +19,7 @@ const app = express();
 const server = new Server(app);
 const io = socket(server);
 
-const { tree: m, recv } = universServer({
+const { tree: m, recv } = serverSync({
   model: Model,
   send: async patch => {
     console.log(`sending patch: ${JSON.stringify(patch)}`);

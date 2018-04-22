@@ -20,7 +20,6 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "mobx-state-tree": "^2.0.4",
-    "univers": "*",
     "uuid": "^3.2.1"
   },
   "devDependencies": {

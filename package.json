@@ -1,6 +1,6 @@
 {
   "private": true,
-  "workspaces": ["client", "server", "shared", "univers"],
+  "workspaces": ["client", "server", "shared", "minna"],
   "devDependencies": {
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
