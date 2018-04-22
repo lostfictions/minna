@@ -22,7 +22,7 @@ export default class Sprites {
           // for some reason we can't use "change.newValue" -- we have to get it
           // from the map ourselves?
           const sprite = change.object.get(change.name)!;
-          const pixiSprite = new PixiSprite(sprite);
+          const pixiSprite = new PixiSprite(app, sprite);
 
           this.idsToPixiSprites.set(sprite.id, pixiSprite);
           this.container.addChild(pixiSprite.graphic);
