@@ -1,9 +1,7 @@
 {
   "private": true,
   "workspaces": [
-    "client",
-    "server",
-    "shared",
+    "zone",
     "minna"
   ],
   "devDependencies": {
