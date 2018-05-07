@@ -6,7 +6,7 @@ import { default as socket } from "socket.io";
 
 import { getSnapshot } from "mobx-state-tree";
 import { serverSync } from "minna";
-import { Model } from "../../shared";
+import { Model } from "zone-shared";
 
 // import path from "path";
 // import level from "level";
@@ -14,7 +14,7 @@ import { Model } from "../../shared";
 // const DB_PATH = path.join(__dirname, "../persist/db");
 // const db = level(DB_PATH);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(express.static(path.resolve(__dirname, "../static")));
