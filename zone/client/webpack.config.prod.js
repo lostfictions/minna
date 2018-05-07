@@ -1,4 +1,5 @@
-/* eslint no-undef:2, no-unused-vars:2 */
+/* eslint no-undef:2, no-unused-vars:1 */
+// @ts-check
 
 const path = require("path");
 const webpack = require("webpack");
@@ -22,11 +23,11 @@ module.exports = {
   ],
   module: {
     rules: [
-      {
-        test: /\.(j|t)sx?$/,
-        use: "source-map-loader",
-        enforce: "pre"
-      },
+      // {
+      //   test: /\.(j|t)sx?$/,
+      //   use: "source-map-loader",
+      //   enforce: "pre"
+      // },
       {
         test: /\.tsx?$/,
         loaders: ["ts-loader"]

@@ -6,7 +6,7 @@ import { default as socket } from "socket.io";
 
 import { getSnapshot } from "mobx-state-tree";
 import { serverSync } from "minna";
-import { Model } from "zone-shared";
+import { Model } from "../../shared";
 
 // import path from "path";
 // import level from "level";
