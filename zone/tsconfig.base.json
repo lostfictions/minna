@@ -12,6 +12,5 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "experimentalDecorators": true
-  },
-  "include": ["./level.d.ts", "./src/**/*"]
+  }
 }
