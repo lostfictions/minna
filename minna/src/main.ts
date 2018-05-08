@@ -36,6 +36,8 @@ export interface ClientOptions<S, T> extends CommonOptions<S> {
 export type ServerRecv = { recv: (action: ISerializedActionCall) => void };
 export type ClientRecv = { recv: (result: IJsonPatch) => void };
 
+// For convenience, we export a function that checks the environment variable to
+// decide whether it should act as a server or a client.
 export function sync<S, T>(
   options: ServerOptions<S, T>
 ): {
@@ -88,12 +90,17 @@ export function clientSync<S, T>(
       checkCallArguments(call);
     }
 
+    // if we're applying a snapshot or patches on the client, we don't do
+    // anything.
     if (call.name === "@APPLY_SNAPSHOT" || call.name === "@APPLY_PATCHES") {
       next(call);
       return;
     }
 
+    // we should never reach a non-root call in client code (at least until we
+    // implement optimistic updates?)
     if (call.rootId !== call.id) {
+      console.warn("Non-root MST call reached in client code!");
       abort(undefined);
       return;
     }
