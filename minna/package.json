@@ -19,7 +19,7 @@
     "watch:test": "jest --colors --watch"
   },
   "author": "s <https://github.com/lostfictions>",
-  "license": "MPL-2.0",
+  "license": "AGPL-3.0",
   "dependencies": {
     "debug": "^3.1.0",
     "mobx-state-tree": "^2.0.4"

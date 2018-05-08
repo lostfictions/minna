@@ -1,4 +1,4 @@
-import path from "path";
+// import path from "path";
 import { Server } from "http";
 
 import express from "express";
@@ -6,18 +6,25 @@ import { default as socket } from "socket.io";
 
 import { getSnapshot } from "mobx-state-tree";
 import { serverSync } from "minna";
-import { Model } from "zone-shared";
+import { Model } from "../../shared";
 
-// import path from "path";
+import path from "path";
 // import level from "level";
 
 // const DB_PATH = path.join(__dirname, "../persist/db");
 // const db = level(DB_PATH);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(express.static(path.resolve(__dirname, "../static")));
+
+// add webpack middleware to serve client code in development. (in production,
+// the bundle is already placed in static/.)
+if (process.env.NODE_ENV === "development") {
+  const { addWebpack } = require("./webpack");
+  addWebpack(app);
+}
 
 const server = new Server(app);
 const io = socket(server);

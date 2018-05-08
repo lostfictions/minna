@@ -19,7 +19,7 @@ export interface SpriteSnap {
 
 export const Sprite = types
   .model({
-    id: types.optional(types.identifier(), () => uuid()),
+    id: types.optional<string, string>(types.identifier(), () => uuid()),
     x: types.number,
     y: types.number,
     rotation: 0,

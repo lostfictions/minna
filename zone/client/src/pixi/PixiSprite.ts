@@ -1,7 +1,7 @@
 import { autorun } from "mobx";
 import { Graphics, Point, interaction } from "pixi.js";
 
-import { Sprite } from "zone-shared";
+import { Sprite } from "../../../shared";
 
 import PixiApp from "./PixiApp";
 

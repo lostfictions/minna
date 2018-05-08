@@ -8,11 +8,9 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "moduleResolution": "node",
-    "declaration": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "outDir": "./dist"
-  },
-  "include": ["./src/**/*"]
+    "experimentalDecorators": true
+  }
 }
