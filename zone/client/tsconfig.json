@@ -4,6 +4,7 @@
     "target": "es2016",
     "module": "esnext",
     "jsx": "react",
+    // allowJS is needed to import minna? apparently? which makes no sense
     "allowJs": true
   },
   "include": ["./src/**/*"]

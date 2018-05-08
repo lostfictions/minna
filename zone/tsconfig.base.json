@@ -11,12 +11,6 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "experimentalDecorators": true,
-    "baseUrl": ".",
-    "paths": {
-      "zone-shared": [
-        "shared"
-      ]
-    }
+    "experimentalDecorators": true
   }
 }

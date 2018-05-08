@@ -1,6 +1,6 @@
 import { Container, Graphics, Circle, Text } from "pixi.js";
 
-import { assertNever } from "zone-shared";
+import { assertNever } from "../../../shared";
 
 import App from "./PixiApp";
 

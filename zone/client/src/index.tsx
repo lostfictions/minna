@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === "production") {
 } else {
   const PROTOCOL = "http";
   const HOSTNAME = "localhost";
-  const PORT = 3001;
+  const PORT = process.env.PORT || 3000;
   host = `${PROTOCOL}://${HOSTNAME}:${PORT}`;
 }
 

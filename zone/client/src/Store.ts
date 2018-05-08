@@ -3,7 +3,7 @@ import { IJsonPatch, applySnapshot } from "mobx-state-tree";
 
 import { clientSync } from "minna";
 
-import { Model, randomName } from "zone-shared";
+import { Model, randomName } from "../../shared";
 
 export class Store {
   @observable clientId: string;
