@@ -8,12 +8,7 @@ import io from "socket.io-client";
 import App from "./components/App";
 import { Store } from "./Store";
 
-import PixiApp from "./pixi/PixiApp";
-import Cursors from "./pixi/Cursors";
-import Sprites from "./pixi/Sprites";
-
 configureMobx({ enforceActions: true });
-PIXI.utils.skipHello();
 
 let host: string;
 if (process.env.NODE_ENV === "production") {
@@ -40,15 +35,3 @@ socket.on("disconnect", (reason: string) => {
 const store = new Store(socket);
 
 render(<App store={store} />, document.querySelector("#root"));
-
-///////////
-// Pixi
-///////////
-
-const app = new PixiApp(store, {
-  view: document.getElementById("canvas")! as HTMLCanvasElement,
-  antialias: true,
-  backgroundColor: 0xcccccc
-});
-/* const cursors =  */ new Cursors(app);
-/* const sprites = */ new Sprites(app);

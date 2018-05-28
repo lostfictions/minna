@@ -7,7 +7,6 @@ import hotMiddleware from "webpack-hot-middleware";
 export function addWebpack(app: Application) {
   console.log("Adding webpack middleware for serving client code...");
 
-  /** @type {any} */
   const config = require("../../client/webpack.config");
   const compiler = webpack(config({ development: true }));
 

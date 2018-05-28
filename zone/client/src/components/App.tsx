@@ -3,7 +3,6 @@ import { Provider, inject, observer } from "mobx-react";
 import Mousetrap from "mousetrap";
 
 import { hsvToRgb } from "../../../shared";
-import { utils as Util } from "pixi.js";
 
 import StackingContext from "./StackingContext";
 import { Store } from "../Store";
