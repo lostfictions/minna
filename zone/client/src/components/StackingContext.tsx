@@ -15,7 +15,7 @@ export default function StackingContext({
   children,
   interactionEnabled
 }: StackingContextProps) {
-  let pointerEvents = "auto";
+  let pointerEvents: "auto" | "none" = "auto";
   if (interactionEnabled === false) {
     pointerEvents = "none";
   }
