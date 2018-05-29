@@ -2,7 +2,7 @@ import { Application } from "express";
 
 import webpack from "webpack";
 import devMiddleware from "webpack-dev-middleware";
-import hotMiddleware from "webpack-hot-middleware";
+import hotClient from "webpack-hot-client";
 
 export function addWebpack(app: Application) {
   console.log("Adding webpack middleware for serving client code...");
@@ -10,6 +10,7 @@ export function addWebpack(app: Application) {
   const config = require("../../client/webpack.config");
   const compiler = webpack(config({ development: true }));
 
-  app.use(hotMiddleware(compiler));
+  hotClient(compiler);
+
   app.use(devMiddleware(compiler, { noInfo: true }));
 }

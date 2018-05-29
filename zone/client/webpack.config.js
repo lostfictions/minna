@@ -13,9 +13,7 @@ module.exports = function(/** @type {{[key: string]: any}} */ env) {
       filename: "bundle.js",
       path: path.resolve(__dirname, "../build/server/static")
     },
-    resolve: {
-      extensions: [".ts", ".tsx", ".js", ".jsx"]
-    },
+    resolve: { extensions: [".ts", ".tsx", ".js", ".jsx"] },
     plugins: [
       new webpack.DefinePlugin({
         "process.env.MINNA_ENV": JSON.stringify("browser")
@@ -28,7 +26,30 @@ module.exports = function(/** @type {{[key: string]: any}} */ env) {
         //   use: "source-map-loader",
         //   enforce: "pre"
         // },
-        { test: /\.(j|t)sx?$/, loader: "ts-loader", exclude: /node_modules/ }
+        {
+          test: /\.(j|t)sx?$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader",
+            options: {
+              cacheDirectory: true,
+              babelrc: false,
+              presets: [
+                [
+                  "@babel/preset-env",
+                  { targets: { browsers: "last 2 Chrome versions" } }
+                ],
+                "@babel/preset-typescript",
+                "@babel/preset-react"
+              ],
+              plugins: [
+                ["@babel/plugin-proposal-decorators", { legacy: true }],
+                ["@babel/plugin-proposal-class-properties", { loose: true }],
+                "react-hot-loader/babel"
+              ]
+            }
+          }
+        }
       ]
     }
   };
@@ -48,7 +69,6 @@ module.exports = function(/** @type {{[key: string]: any}} */ env) {
   } else {
     // Add fork-checker plugin.
     const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-
     config = {
       ...config,
       plugins: [
@@ -58,13 +78,6 @@ module.exports = function(/** @type {{[key: string]: any}} */ env) {
         ...config.plugins
       ]
     };
-
-    // Set ts-loader to transpile-only mode
-    const tsLoaderConfig = config.module.rules.find(
-      r => r.loader === "ts-loader"
-    );
-    if (!tsLoaderConfig.options) tsLoaderConfig.options = {};
-    tsLoaderConfig.options.transpileOnly = true;
   }
 
   return config;
