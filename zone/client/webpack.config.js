@@ -2,6 +2,7 @@
 // @ts-check
 const path = require("path");
 const webpack = require("webpack");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 module.exports = function(/** @type {{[key: string]: any}} */ env) {
   let config = {
@@ -15,6 +16,9 @@ module.exports = function(/** @type {{[key: string]: any}} */ env) {
     },
     resolve: { extensions: [".ts", ".tsx", ".js", ".jsx"] },
     plugins: [
+      new ForkTsCheckerWebpackPlugin({
+        tsconfig: path.resolve(__dirname, "./tsconfig.json")
+      }),
       new webpack.DefinePlugin({
         "process.env.MINNA_ENV": JSON.stringify("browser")
       })
@@ -64,18 +68,6 @@ module.exports = function(/** @type {{[key: string]: any}} */ env) {
         new webpack.DefinePlugin({
           "process.env.NODE_ENV": JSON.stringify("production")
         })
-      ]
-    };
-  } else {
-    // Add fork-checker plugin.
-    const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-    config = {
-      ...config,
-      plugins: [
-        new ForkTsCheckerWebpackPlugin({
-          tsconfig: path.resolve(__dirname, "./tsconfig.json")
-        }),
-        ...config.plugins
       ]
     };
   }
