@@ -10,19 +10,14 @@ import { Store } from "./Store";
 
 configureMobx({ enforceActions: true });
 
-let host: string;
-if (process.env.NODE_ENV === "production") {
-  host = window.location.toString();
-} else {
-  const PROTOCOL = "http";
-  const HOSTNAME = "localhost";
-  const PORT = process.env.PORT || 3000;
-  host = `${PROTOCOL}://${HOSTNAME}:${PORT}`;
-}
+const host = window.location.toString();
 
-const socket = io.connect(host, {
-  transports: ["websocket"]
-});
+const socket = io.connect(
+  host,
+  {
+    transports: ["websocket"]
+  }
+);
 
 socket.on("connect", () => {
   console.log("socket connected!");

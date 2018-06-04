@@ -6,7 +6,8 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>boop</title>
   <meta name="description" content="bboop">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no"
+  />
   <style>
     html,
     body {
@@ -19,6 +20,8 @@
 
     body {
       background-color: #333;
+      /* fix chrome pull-to-refresh. if it actually worked, that is */
+      overscroll-behavior: none;
     }
 
     .container {

@@ -53,6 +53,17 @@ module.exports = function(/** @type {{[key: string]: any}} */ env) {
               ]
             }
           }
+        },
+        {
+          test: /\.css$/,
+          use: ["style-loader", "css-loader"]
+        },
+        {
+          test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+          loader: "url-loader",
+          options: {
+            limit: 10000
+          }
         }
       ]
     }
@@ -68,6 +79,16 @@ module.exports = function(/** @type {{[key: string]: any}} */ env) {
         new webpack.DefinePlugin({
           "process.env.NODE_ENV": JSON.stringify("production")
         })
+      ]
+    };
+  } else {
+    config = {
+      ...config,
+      entry: [...config.entry, "webpack-hot-middleware/client"],
+      plugins: [
+        ...config.plugins,
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin()
       ]
     };
   }

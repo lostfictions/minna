@@ -9,6 +9,8 @@ import { serverSync } from "minna";
 import { Model } from "../../shared";
 
 import path from "path";
+import { v4 } from "internal-ip";
+
 // import level from "level";
 
 // const DB_PATH = path.join(__dirname, "../persist/db");
@@ -88,3 +90,6 @@ io.on("connection", s => {
 server.listen(PORT);
 
 console.log(`Listening on port ${PORT}`);
+v4().then((ip: string) => {
+  console.log(`(Internal IP: http://${ip}:${PORT})`);
+});
