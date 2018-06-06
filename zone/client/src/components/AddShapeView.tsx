@@ -27,20 +27,23 @@ export default class AddShapeView extends React.Component<{ store?: Store }> {
           left: 0
         }}
       >
-        <Polygon model={this.poly} />
+        <Paper model={this.poly} />
       </svg>
     );
   }
 }
 
 @observer
-class Polygon extends React.Component<{ model: PolyType }> {
+class Paper extends React.Component<{ model: PolyType }> {
+  /** temporary attributes for shape-adding behaviour. */
   @observable
   transform = {
-    x: 0,
-    y: 0,
+    x: 150,
+    y: 200,
     angle: 0,
-    scale: 1
+    scale: 100,
+    /** x/y */
+    aspect: 1 / 1.4
   };
 
   @computed
@@ -52,17 +55,6 @@ class Polygon extends React.Component<{ model: PolyType }> {
       .map(({ x, y }) => `L ${x} ${y}`)
       .join(" ")}`;
   }
-
-  // @computed
-  // get svgClosedPathString(): string {
-  //   return this.path + " Z";
-  // }
-
-  // onDragPoly: DraggableEventHandler = (_ev, data) => {
-  //   const { deltaX, deltaY } = data;
-
-  //   this.props.model.setPosition(deltaX, deltaY);
-  // };
 
   onDragPoint: DraggableEventHandler = (_ev, data) => {
     const { deltaX, deltaY } = data;
@@ -83,9 +75,9 @@ class Polygon extends React.Component<{ model: PolyType }> {
   };
 
   render() {
-    const { color, points, bounds } = this.props.model;
+    const { color, points } = this.props.model;
 
-    const { x, y, angle, scale } = this.transform;
+    const { x, y, angle, scale, aspect } = this.transform;
 
     return (
       <g
@@ -102,25 +94,19 @@ class Polygon extends React.Component<{ model: PolyType }> {
         //   //   this.props.model.setPosition(deltaX, deltaY);
         // }}
       >
-        {/* <DraggableCore onDrag={this.onDragPoly}> */}
+        <rect
+          x={0}
+          y={0}
+          width={aspect}
+          height={1}
+          onClick={this.onClickRect}
+          fill={points.length === 0 ? color : "rgba(200, 200, 20, 0.3)"}
+        />
         <path
-          d={
-            this.svgPathString // style={{ pointerEvents: "none" }}
-          }
+          d={this.svgPathString}
           fill={color}
           stroke="black"
           strokeWidth={2}
-        />
-        {/* </DraggableCore> */}
-
-        <rect
-          x={bounds.minX}
-          y={bounds.minY}
-          width={bounds.maxX - bounds.minX}
-          height={bounds.maxY - bounds.minY}
-          stroke="rgba(100, 158, 255, 0.7)"
-          onClick={this.onClickRect}
-          fill={points.length === 0 ? color : "rgba(200, 200, 20, 0.3)"}
         />
 
         {points.map(({ x, y }, i) => (
