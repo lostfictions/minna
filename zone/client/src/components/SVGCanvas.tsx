@@ -57,19 +57,32 @@ class Polygon extends React.Component<{ model: PolyType }> {
   };
 
   onDragPoint: DraggableEventHandler = (_ev, data) => {
-    const { x, y } = data;
+    const { deltaX, deltaY } = data;
 
-    this.props.model.setPoint(parseInt(data.node.dataset.index!, 10), { x, y });
+    this.props.model.setPoint(
+      parseFloat(data.node.dataset.index!),
+      deltaX,
+      deltaY
+    );
   };
 
   render() {
-    const { color, points } = this.props.model;
+    const { color, points, bounds } = this.props.model;
 
     return (
       <>
         <DraggableCore onDrag={this.onDragPoly}>
           <path d={this.path} fill={color} stroke="rgba(20, 20, 20, 0.5)" />
         </DraggableCore>
+        <rect
+          style={{ pointerEvents: "none" }}
+          x={bounds.minX}
+          y={bounds.minY}
+          width={bounds.maxX - bounds.minX}
+          height={bounds.maxY - bounds.minY}
+          stroke="rgba(100, 158, 255, 0.7)"
+          fill="transparent"
+        />
         {points.map(({ x, y }, i) => (
           <Point onDrag={this.onDragPoint} x={x} y={y} index={i} key={i} />
         ))}

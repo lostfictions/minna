@@ -5,6 +5,10 @@ import { configure as configureMobx } from "mobx";
 
 import io from "socket.io-client";
 
+import "bulma/css/bulma.min.css";
+
+import "../editing-icons/icons.css";
+
 import App from "./components/App";
 import { Store } from "./Store";
 

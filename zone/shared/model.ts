@@ -28,7 +28,7 @@ const Point = types.custom<[number, number], Point>({
   }
 });
 
-const Poly = types
+export const Poly = types
   .model({
     id: types.optional<string, string>(types.identifier(), () => uuid()),
     points: types.array(Point),
@@ -66,8 +66,12 @@ const Poly = types
     deletePoint(index: number) {
       self.points.splice(index, 1);
     },
-    setPoint(index: number, point: Point) {
-      self.points[index] = point;
+    setPoint(index: number, deltaX: number, deltaY: number) {
+      const { x, y } = self.points[index];
+      self.points[index] = {
+        x: x + deltaX,
+        y: y + deltaY
+      };
     },
     setPosition(deltaX: number, deltaY: number) {
       // console.log("here");

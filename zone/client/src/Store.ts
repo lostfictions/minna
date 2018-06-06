@@ -1,11 +1,13 @@
 import { observable, action, autorun, IReactionDisposer } from "mobx";
-import { IJsonPatch, applySnapshot } from "mobx-state-tree";
+import { IJsonPatch, applySnapshot, getSnapshot } from "mobx-state-tree";
 
 import { clientSync } from "minna";
 
 import { Model, randomName } from "../../shared";
 
 export class Store {
+  @observable shapeEditing = false;
+
   @observable clientId: string;
 
   @observable.ref cursorPos: [number, number] = [0, 0];
@@ -32,6 +34,13 @@ export class Store {
     });
 
     this.data = tree;
+
+    console.log("FIXME: remove");
+    this.data.addPoly({
+      id: "bittt",
+      points: [[50, 100], [200, 100], [50, 200]] as any,
+      color: "blue"
+    });
 
     socket.on("patch", (patch: IJsonPatch) => {
       // console.log(`got patch ${JSON.stringify(patch)}, applying`);
@@ -70,5 +79,10 @@ export class Store {
   @action.bound
   setCursor(x: number, y: number) {
     this.cursorPos = [x, y];
+  }
+
+  @action.bound
+  setShapeEditing(enabled: boolean) {
+    this.shapeEditing = enabled;
   }
 }
