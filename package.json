@@ -5,16 +5,16 @@
     "minna"
   ],
   "devDependencies": {
-    "@types/jest": "^22.1.1",
+    "@types/jest": "^23.0.0",
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-typescript": "^0.12.0",
-    "jest": "^23.0.1",
+    "jest": "^23.1.0",
     "npm-run-all": "^4.1.2",
-    "prettier": "^1.12.1",
+    "prettier": "^1.13.4",
     "ts-jest": "^22.0.3",
-    "typescript": "^2.8.3",
-    "typescript-eslint-parser": "^15.0.0"
+    "typescript": "^2.9.1",
+    "typescript-eslint-parser": "^16.0.0"
   },
   "jest": {
     "transform": {
