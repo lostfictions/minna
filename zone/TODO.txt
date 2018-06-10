@@ -1,6 +1,25 @@
 
+- "Commit" image
+- Make image shareable!!
+
+
+
+----------------
+
 Configurable UI for mouse or touch
   - bigger path contact points
   - ability to rotate and scale (illustrator-style handles?)
+
+Fix bugginess with Hammer when rotating then panning repeatedly
+
+"Error handling" for invalid image URL? (Just put a rect behind it?)
+
+Paper aspect doesn't reflect image aspect!
+
+Constrain points to image
+
+Allow undoing points!
+
+----------------
 
 

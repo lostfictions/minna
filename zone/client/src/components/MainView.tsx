@@ -28,7 +28,7 @@ export default class MainView extends React.Component<{ store?: Store }> {
   render() {
     return (
       <>
-        <SVGCanvas />
+        {/* <SVGCanvas /> */}
         {this.props.store!.shapeEditing ? <AddShapeView /> : <AddShapeButton />}
         {/* <div
             style={{

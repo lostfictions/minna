@@ -39,7 +39,7 @@ export class Store {
     this.data.addPoly({
       id: "bittt",
       points: [[50, 100], [200, 100], [50, 200]] as any,
-      color: "blue"
+      image: ""
     });
 
     socket.on("patch", (patch: IJsonPatch) => {

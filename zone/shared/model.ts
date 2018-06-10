@@ -32,7 +32,7 @@ export const Poly = types
   .model({
     id: types.optional<string, string>(types.identifier(), () => uuid()),
     points: types.array(Point),
-    color: types.string
+    image: types.string
   })
   .views(self => ({
     get bounds() {
@@ -86,8 +86,8 @@ export const Poly = types
       //   p.y += deltaY;
       // });
     },
-    setColor(color: string) {
-      self.color = color;
+    setImage(url: string) {
+      self.image = url;
     }
   }));
 
@@ -96,7 +96,7 @@ export type PolyType = typeof Poly.Type;
 interface PolySnap {
   id?: string;
   points: Point[];
-  color: string;
+  image: string;
 }
 
 export const Model = types

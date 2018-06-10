@@ -17,7 +17,7 @@ import testImage from "../../temp/test.jpg";
 export default class AddShapeView extends React.Component<{ store?: Store }> {
   poly = Poly.create({
     points: [],
-    color: "red"
+    image: testImage
   });
 
   render() {
@@ -47,39 +47,12 @@ class Paper extends React.Component<{ model: PolyType }> {
     deep: false
   });
 
+  hammer: HammerManager | null = null;
+  ref = React.createRef<SVGUseElement>();
+
   initializeGesture = (ev: HammerInput) => {
     this.initialRotation = ev.rotation;
   };
-
-  @action.bound
-  setGesture(ev: HammerInput): void {
-    // HACK: Hammer events' "rotation" field is supposed to be a delta, but
-    // instead seems to be an absolute value -- so we have to track it.
-    // Unfortunately, for gestures that might be one-finger, like panning, the
-    // rotation will read as 0 until a second finger is placed down, at which
-    // point it might jump to any angle between 0 and 360. So we check if our
-    // initial value is _exactly_ zero, and if it is, we're allowed to
-    // initialize it in the move phase.
-    if (this.initialRotation === 0) {
-      if (ev.rotation !== 0) {
-        this.initialRotation = ev.rotation;
-      }
-    }
-    const rads = ((ev.rotation - this.initialRotation) * Math.PI) / 180;
-    this.totalTransform.set(
-      Transform.IDENTITY.translateBy(ev.deltaX, ev.deltaY)
-        .scaleBy(ev.scale, [ev.center.x, ev.center.y])
-        .rotateBy(rads, [ev.center.x, ev.center.y])
-        .multiplyBy(this.committedTransform)
-    );
-  }
-
-  commitGesture = () => {
-    this.committedTransform = this.totalTransform.get();
-  };
-
-  hammer: HammerManager | null = null;
-  ref = React.createRef<SVGRectElement>();
 
   componentDidMount() {
     const h = new Hammer(this.ref.current!, {
@@ -122,7 +95,33 @@ class Paper extends React.Component<{ model: PolyType }> {
   }
 
   @action.bound
-  onTap(ev: HammerInput) {
+  setGesture(ev: HammerInput): void {
+    // HACK: Hammer events' "rotation" field is supposed to be a delta, but
+    // instead seems to be an absolute value -- so we have to track it.
+    // Unfortunately, for gestures that might be one-finger, like panning, the
+    // rotation will read as 0 until a second finger is placed down, at which
+    // point it might jump to any angle between 0 and 360. So we check if our
+    // initial value is _exactly_ zero, and if it is, we're allowed to
+    // initialize it in the move phase.
+    if (this.initialRotation === 0) {
+      if (ev.rotation !== 0) {
+        this.initialRotation = ev.rotation;
+      }
+    }
+    const rads = ((ev.rotation - this.initialRotation) * Math.PI) / 180;
+    this.totalTransform.set(
+      Transform.IDENTITY.translateBy(ev.deltaX, ev.deltaY)
+        .scaleBy(ev.scale, [ev.center.x, ev.center.y])
+        .rotateBy(rads, [ev.center.x, ev.center.y])
+        .multiplyBy(this.committedTransform)
+    );
+  }
+
+  commitGesture = () => {
+    this.committedTransform = this.totalTransform.get();
+  };
+
+  onTap = (ev: HammerInput) => {
     const { x, y } = ev.center;
     const [tX, tY] = this.totalTransform
       .get()
@@ -130,7 +129,7 @@ class Paper extends React.Component<{ model: PolyType }> {
       .transformPoint([x, y]);
 
     this.props.model.addPoint([tX, tY] as any);
-  }
+  };
 
   onDragPoint: DraggableEventHandler = (_ev, data) => {
     const { deltaX, deltaY } = data;
@@ -155,35 +154,42 @@ class Paper extends React.Component<{ model: PolyType }> {
   };
 
   render() {
-    const { color, points } = this.props.model;
+    const { points, image } = this.props.model;
     const trans = this.totalTransform.get();
     const { s, r, tx, ty } = trans;
 
     return (
       <>
+        <defs>
+          <image id="img" xlinkHref={image} width={this.aspect} height={1} />
+        </defs>
         <g
           style={{ transform: `matrix(${s}, ${r}, ${-r}, ${s}, ${tx}, ${ty})` }}
         >
-          <clipPath id="temp">
+          <defs>
             <path
+              id="path"
+              vectorEffect="non-scaling-stroke"
               d={this.svgPathString}
-              // fill={color}
-              // stroke="black"
-              // strokeWidth={2}
-              // vectorEffect="non-scaling-stroke"
             />
+          </defs>
+          <clipPath id="temp">
+            <use xlinkHref="#path" />
           </clipPath>
-          <rect
-            id="rect"
-            // clipPath="url(#temp)"
-            x={0}
-            y={0}
+          <use
+            xlinkHref="#img"
             ref={this.ref}
-            width={this.aspect}
-            height={1}
-            fill={points.length < 3 ? color : "rgba(20, 20, 20, 0.3)"}
+            opacity={points.length >= 3 ? 0.3 : 1}
           />
-          <use xlinkHref="#rect" clipPath="url(#temp)" />
+          <use xlinkHref="#img" clipPath="url(#temp)" pointerEvents="none" />
+
+          <use
+            xlinkHref="#path"
+            fill="none"
+            stroke="black"
+            strokeWidth={2}
+            pointerEvents="none"
+          />
         </g>
 
         {points.map(({ x: pX, y: pY }, i) => {
@@ -192,13 +198,6 @@ class Paper extends React.Component<{ model: PolyType }> {
             <Point onDrag={this.onDragPoint} x={tX} y={tY} index={i} key={i} />
           );
         })}
-
-        {/* <image
-          id="img"
-          xlinkHref={testImage}
-          width={this.aspect}
-          height={1}
-        /> */}
       </>
     );
   }
@@ -223,8 +222,8 @@ class Point extends React.Component<PointProps> {
         <rect
           onClick={this.onClick}
           data-index={index}
-          x={x + -20}
-          y={y + -20}
+          x={x - 20}
+          y={y - 20}
           width={40}
           height={40}
           fill="transparent"
