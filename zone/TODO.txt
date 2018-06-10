@@ -1,0 +1,6 @@
+
+Configurable UI for mouse or touch
+  - bigger path contact points
+  - ability to rotate and scale (illustrator-style handles?)
+
+

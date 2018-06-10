@@ -10,6 +10,8 @@ import { Store } from "../Store";
 
 import { PolyType, Poly, Transform } from "../../../shared";
 
+import testImage from "../../temp/test.jpg";
+
 @inject("store")
 @observer
 export default class AddShapeView extends React.Component<{ store?: Store }> {
@@ -156,42 +158,53 @@ class Paper extends React.Component<{ model: PolyType }> {
     const { color, points } = this.props.model;
     const trans = this.totalTransform.get();
     const { s, r, tx, ty } = trans;
-    const scale = trans.getScale();
 
     return (
-      <g style={{ transform: `matrix(${s}, ${r}, ${-r}, ${s}, ${tx}, ${ty})` }}>
-        <rect
-          x={0}
-          y={0}
-          ref={this.ref}
+      <>
+        <g
+          style={{ transform: `matrix(${s}, ${r}, ${-r}, ${s}, ${tx}, ${ty})` }}
+        >
+          <clipPath id="temp">
+            <path
+              d={this.svgPathString}
+              // fill={color}
+              // stroke="black"
+              // strokeWidth={2}
+              // vectorEffect="non-scaling-stroke"
+            />
+          </clipPath>
+          <rect
+            id="rect"
+            // clipPath="url(#temp)"
+            x={0}
+            y={0}
+            ref={this.ref}
+            width={this.aspect}
+            height={1}
+            fill={points.length < 3 ? color : "rgba(20, 20, 20, 0.3)"}
+          />
+          <use xlinkHref="#rect" clipPath="url(#temp)" />
+        </g>
+
+        {points.map(({ x: pX, y: pY }, i) => {
+          const [tX, tY] = trans.transformPoint([pX, pY]);
+          return (
+            <Point onDrag={this.onDragPoint} x={tX} y={tY} index={i} key={i} />
+          );
+        })}
+
+        {/* <image
+          id="img"
+          xlinkHref={testImage}
           width={this.aspect}
           height={1}
-          fill={points.length < 3 ? color : "rgba(20, 20, 20, 0.3)"}
-        />
-        <path
-          d={this.svgPathString}
-          fill={color}
-          stroke="black"
-          strokeWidth={2}
-        />
-
-        {points.map(({ x: pX, y: pY }, i) => (
-          <Point
-            scale={scale}
-            onDrag={this.onDragPoint}
-            x={pX}
-            y={pY}
-            index={i}
-            key={i}
-          />
-        ))}
-      </g>
+        /> */}
+      </>
     );
   }
 }
 
 interface PointProps {
-  scale: number;
   onDrag: DraggableEventHandler;
   x: number;
   y: number;
@@ -204,19 +217,18 @@ class Point extends React.Component<PointProps> {
   }
 
   render() {
-    const { x, y, index, onDrag, scale } = this.props;
+    const { x, y, index, onDrag } = this.props;
     return (
       <DraggableCore onDrag={onDrag}>
         <rect
           onClick={this.onClick}
           data-index={index}
-          x={x + -20 / scale}
-          y={y + -20 / scale}
-          width={40 / scale}
-          height={40 / scale}
+          x={x + -20}
+          y={y + -20}
+          width={40}
+          height={40}
           fill="transparent"
           stroke="black"
-          vectorEffect="non-scaling-stroke"
         />
       </DraggableCore>
     );
