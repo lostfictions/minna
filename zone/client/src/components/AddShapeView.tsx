@@ -2,7 +2,7 @@ import React from "react";
 import { inject, observer } from "mobx-react";
 import { computed, observable, action } from "mobx";
 
-import Draggable, { DraggableEventHandler } from "react-draggable";
+import { DraggableCore, DraggableEventHandler } from "react-draggable";
 
 import Hammer from "hammerjs";
 
@@ -14,7 +14,7 @@ import { PolyType, Poly, Transform } from "../../../shared";
 @observer
 export default class AddShapeView extends React.Component<{ store?: Store }> {
   poly = Poly.create({
-    points: [[200, 200], [400, 400]],
+    points: [],
     color: "red"
   });
 
@@ -77,7 +77,7 @@ class Paper extends React.Component<{ model: PolyType }> {
   };
 
   hammer: HammerManager | null = null;
-  ref = React.createRef<SVGGElement>();
+  ref = React.createRef<SVGRectElement>();
 
   componentDidMount() {
     const h = new Hammer(this.ref.current!, {
@@ -89,7 +89,8 @@ class Paper extends React.Component<{ model: PolyType }> {
             pointers: 0
           }
         ],
-        [Hammer.Tap]
+        [Hammer.Tap],
+        [Hammer.Press]
       ]
     });
 
@@ -98,7 +99,7 @@ class Paper extends React.Component<{ model: PolyType }> {
     h.on("panstart", this.initializeGesture);
     h.on("panmove", this.setGesture);
     h.on("panend", this.commitGesture);
-    h.on("tap", this.onTap);
+    h.on("tap pressup", this.onTap);
   }
 
   componentWillUnmount() {
@@ -119,8 +120,14 @@ class Paper extends React.Component<{ model: PolyType }> {
   }
 
   @action.bound
-  onTap(_ev: HammerInput) {
-    console.log("tap!");
+  onTap(ev: HammerInput) {
+    const { x, y } = ev.center;
+    const [tX, tY] = this.totalTransform
+      .get()
+      .inverse()
+      .transformPoint([x, y]);
+
+    this.props.model.addPoint([tX, tY] as any);
   }
 
   onDragPoint: DraggableEventHandler = (_ev, data) => {
@@ -143,21 +150,19 @@ class Paper extends React.Component<{ model: PolyType }> {
 
   render() {
     const { color, points } = this.props.model;
-    const { s, r, tx, ty } = this.totalTransform.get();
+    const trans = this.totalTransform.get();
+    const { s, r, tx, ty } = trans;
+    const scale = trans.getScale();
 
     return (
-      <g
-        ref={this.ref}
-        style={{
-          transform: `matrix(${s}, ${r}, ${-r}, ${s}, ${tx}, ${ty})`
-        }}
-      >
+      <g style={{ transform: `matrix(${s}, ${r}, ${-r}, ${s}, ${tx}, ${ty})` }}>
         <rect
           x={0}
           y={0}
+          ref={this.ref}
           width={this.aspect}
           height={1}
-          fill={points.length === 0 ? color : "rgba(200, 200, 20, 0.3)"}
+          fill={points.length < 3 ? color : "rgba(20, 20, 20, 0.3)"}
         />
         <path
           d={this.svgPathString}
@@ -167,7 +172,14 @@ class Paper extends React.Component<{ model: PolyType }> {
         />
 
         {points.map(({ x: pX, y: pY }, i) => (
-          <Point onDrag={this.onDragPoint} x={pX} y={pY} index={i} key={i} />
+          <Point
+            scale={scale}
+            onDrag={this.onDragPoint}
+            x={pX}
+            y={pY}
+            index={i}
+            key={i}
+          />
         ))}
       </g>
     );
@@ -175,6 +187,7 @@ class Paper extends React.Component<{ model: PolyType }> {
 }
 
 interface PointProps {
+  scale: number;
   onDrag: DraggableEventHandler;
   x: number;
   y: number;
@@ -187,20 +200,21 @@ class Point extends React.Component<PointProps> {
   }
 
   render() {
-    const { x, y, index, onDrag } = this.props;
+    const { x, y, index, onDrag, scale } = this.props;
     return (
-      <Draggable position={{ x, y }} onDrag={onDrag}>
+      <DraggableCore onDrag={onDrag}>
         <rect
           onClick={this.onClick}
           data-index={index}
-          x={-20}
-          y={-20}
-          width={40}
-          height={40}
+          x={x + -20 / scale}
+          y={y + -20 / scale}
+          width={40 / scale}
+          height={40 / scale}
           fill="transparent"
           stroke="black"
+          vectorEffect="non-scaling-stroke"
         />
-      </Draggable>
+      </DraggableCore>
     );
   }
 }
