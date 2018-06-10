@@ -8,7 +8,7 @@ import Hammer from "hammerjs";
 
 import { Store } from "../Store";
 
-import { PolyType, Poly } from "../../../shared";
+import { PolyType, Poly, Transform } from "../../../shared";
 
 @inject("store")
 @observer
@@ -37,39 +37,68 @@ export default class AddShapeView extends React.Component<{ store?: Store }> {
 
 @observer
 class Paper extends React.Component<{ model: PolyType }> {
-  /** temporary attributes for shape-adding behaviour. */
-  @observable
-  transform = {
-    x: 150,
-    y: 200,
-    angle: 0,
-    scale: 100,
-    /** x/y */
-    aspect: 1 / 1.4
+  @observable aspect = 1.5;
+
+  initialRotation = 0;
+  committedTransform = Transform.IDENTITY.scaleBy(100).translateBy(200, 200);
+  totalTransform = observable.box<Transform>(this.committedTransform, {
+    deep: false
+  });
+
+  initializeGesture = (ev: HammerInput) => {
+    this.initialRotation = ev.rotation;
+  };
+
+  @action.bound
+  setGesture(ev: HammerInput): void {
+    // HACK: Hammer events' "rotation" field is supposed to be a delta, but
+    // instead seems to be an absolute value -- so we have to track it.
+    // Unfortunately, for gestures that might be one-finger, like panning, the
+    // rotation will read as 0 until a second finger is placed down, at which
+    // point it might jump to any angle between 0 and 360. So we check if our
+    // initial value is _exactly_ zero, and if it is, we're allowed to
+    // initialize it in the move phase.
+    if (this.initialRotation === 0) {
+      if (ev.rotation !== 0) {
+        this.initialRotation = ev.rotation;
+      }
+    }
+    const rads = ((ev.rotation - this.initialRotation) * Math.PI) / 180;
+    this.totalTransform.set(
+      Transform.IDENTITY.translateBy(ev.deltaX, ev.deltaY)
+        .scaleBy(ev.scale, [ev.center.x, ev.center.y])
+        .rotateBy(rads, [ev.center.x, ev.center.y])
+        .multiplyBy(this.committedTransform)
+    );
+  }
+
+  commitGesture = () => {
+    this.committedTransform = this.totalTransform.get();
   };
 
   hammer: HammerManager | null = null;
   ref = React.createRef<SVGGElement>();
 
   componentDidMount() {
-    const h = new Hammer(this.ref.current!);
+    const h = new Hammer(this.ref.current!, {
+      recognizers: [
+        [
+          Hammer.Pan,
+          {
+            threshold: 5,
+            pointers: 0
+          }
+        ],
+        [Hammer.Tap]
+      ]
+    });
+
     this.hammer = h;
-    h.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
-    h.add(new Hammer.Rotate({ threshold: 0 })).recognizeWith(h.get("pan"));
-    h.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith(
-      [h.get("pan"), h.get("rotate")] as any /* bad typings */
-    );
 
-    h.add(new Hammer.Tap());
-
-    // h.on("panstart", this.onPanStart);
-    h.on("panmove", this.onPan);
-    h.on("panend", this.onPanEnd);
-    // h.on("rotatestart", this.onRotateStart);
-    // h.on("rotatemove", this.onRotate);
-    // h.on("pinchstart", this.onPinchStart);
-    // h.on("pinchmove", this.onPinch);
-    // h.on("tap", this.onTap);
+    h.on("panstart", this.initializeGesture);
+    h.on("panmove", this.setGesture);
+    h.on("panend", this.commitGesture);
+    h.on("tap", this.onTap);
   }
 
   componentWillUnmount() {
@@ -89,64 +118,9 @@ class Paper extends React.Component<{ model: PolyType }> {
       .join(" ")}`;
   }
 
-  lastDeltaX = 0;
-  lastDeltaY = 0;
   @action.bound
-  onPan(ev: HammerInput) {
-    this.transform.x += ev.deltaX - this.lastDeltaX;
-    this.transform.y += ev.deltaY - this.lastDeltaY;
-    this.lastDeltaX = ev.deltaX;
-    this.lastDeltaY = ev.deltaY;
-  }
-
-  onPanEnd = () => {
-    this.lastDeltaX = 0;
-    this.lastDeltaY = 0;
-  };
-
-  rotateInitialAngle!: number;
-  rotateInitialRotation!: number;
-  rotateInitialX!: number;
-  rotateInitialY!: number;
-
-  onRotateStart = (ev: HammerInput) => {
-    this.rotateInitialAngle = this.transform.angle;
-    // HACK: the event rotation seems to be an absolute value, not a relative
-    // one. even the example on the hammer frontpage is wrong?
-    this.rotateInitialRotation = ev.rotation;
-    this.rotateInitialX = this.transform.x;
-    this.rotateInitialY = this.transform.y;
-    // Alternately:
-    // this.rotateInitialAngle = this.transform.angle - ev.rotation;
-  };
-
-  @action.bound
-  onRotate(ev: HammerInput) {
-    const theta = (ev.rotation - this.rotateInitialRotation) * 0.0174533;
-    const cos = Math.cos(theta);
-    const sin = Math.sin(theta);
-    const deltaX = this.transform.x - ev.center.x;
-    const deltaY = this.transform.y - ev.center.y;
-
-    this.transform.x = cos * deltaX - sin * deltaY + ev.center.x;
-    this.transform.y = sin * deltaX + cos * deltaY + ev.center.y;
-    this.transform.angle = this.rotateInitialAngle + ev.rotation;
-  }
-
-  pinchInitialScale!: number;
-  onPinchStart = (ev: HammerInput) => {
-    this.pinchInitialScale = this.transform.scale;
-    this.onPinch(ev);
-  };
-
-  @action.bound
-  onPinch(ev: HammerInput) {
-    this.transform.scale = this.pinchInitialScale * ev.scale;
-  }
-
-  @action.bound
-  onTap(ev: HammerInput) {
-    //
+  onTap(_ev: HammerInput) {
+    console.log("tap!");
   }
 
   onDragPoint: DraggableEventHandler = (_ev, data) => {
@@ -169,33 +143,20 @@ class Paper extends React.Component<{ model: PolyType }> {
 
   render() {
     const { color, points } = this.props.model;
-
-    const { x, y, angle, scale, aspect } = this.transform;
+    const { s, r, tx, ty } = this.totalTransform.get();
 
     return (
       <g
         ref={this.ref}
         style={{
-          transform: `translate(${x}px, ${y}px) scale(${scale}) rotate(${angle}deg)`
-          // transform: `translate(${x}px, ${y}px) scale(${scale}, ${scale}) rotate(${angle}deg)`
-          // transform: `translate3d(${x}px, ${y}px, 0) scale(${scale}, ${scale}) rotate(${angle}deg)`
+          transform: `matrix(${s}, ${r}, ${-r}, ${s}, ${tx}, ${ty})`
         }}
-        // // TODO: should be on child, here for simplicity for now
-        // onTouchMoveCapture={ev => {
-        //   const { clientX: touchX, clientY: touchY } = ev.touches[0]
-
-        //   // console.log("client", ev.currentTarget.clientLeft, ev.touches[0].clientY);
-        //   // const { deltaX, deltaY } = data;
-
-        //   //   this.props.model.setPosition(deltaX, deltaY);
-        // }}
       >
         <rect
           x={0}
           y={0}
-          width={aspect}
+          width={this.aspect}
           height={1}
-          // onClick={this.onClickRect}
           fill={points.length === 0 ? color : "rgba(200, 200, 20, 0.3)"}
         />
         <path
