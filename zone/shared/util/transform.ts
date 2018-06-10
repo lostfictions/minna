@@ -111,27 +111,20 @@ export default class Transform {
   }
 
   /**
-   * Transform a point or array of points by this.
+   * Transform an array of points by this matrix.
    */
-  transform(p: [number, number][]): [number, number][];
-  transform(p: [number, number]): [number, number];
-  transform(p: [number, number] | [number, number][]) {
-    if (isSinglePoint(p)) {
-      return [
-        this.s * p[0] - this.r * p[1] + this.tx,
-        this.r * p[0] + this.s * p[1] + this.ty
-      ];
-    }
+  transformPoints(ps: [number, number][]): [number, number][] {
+    return ps.map(this.transformPoint);
+  }
 
-    var i;
-    var c = [];
-    for (i = 0; i < p.length; i += 1) {
-      c.push([
-        this.s * p[i][0] - this.r * p[i][1] + this.tx,
-        this.r * p[i][0] + this.s * p[i][1] + this.ty
-      ]);
-    }
-    return c;
+  /**
+   * Transform a point by this matrix.
+   */
+  transformPoint(p: [number, number]): [number, number] {
+    return [
+      this.s * p[0] - this.r * p[1] + this.tx,
+      this.r * p[0] + this.s * p[1] + this.ty
+    ];
   }
 
   /**
@@ -226,10 +219,4 @@ export default class Transform {
   static R180 = new Transform(-1, 0, 0, 0);
   static R270 = new Transform(0, -1, 0, 0);
   static X2 = new Transform(2, 0, 0, 0);
-}
-
-function isSinglePoint(
-  maybeP: [number, number] | [number, number][]
-): maybeP is [number, number] {
-  return typeof maybeP[0] === "number";
 }

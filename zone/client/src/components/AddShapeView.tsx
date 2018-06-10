@@ -133,11 +133,15 @@ class Paper extends React.Component<{ model: PolyType }> {
   onDragPoint: DraggableEventHandler = (_ev, data) => {
     const { deltaX, deltaY } = data;
 
-    this.props.model.setPoint(
-      parseFloat(data.node.dataset.index!),
-      deltaX,
-      deltaY
-    );
+    // We need the scale and rotation of the transform but not the translation,
+    // since we're using deltas.
+    let trans = this.totalTransform.get().inverse();
+    trans.tx = 0;
+    trans.ty = 0;
+
+    const [tX, tY] = trans.transformPoint([deltaX, deltaY]);
+
+    this.props.model.setPoint(parseFloat(data.node.dataset.index!), tX, tY);
 
     // TODO: constrain to paper bounds
   };
